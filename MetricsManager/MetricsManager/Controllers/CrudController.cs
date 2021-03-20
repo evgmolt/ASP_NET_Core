@@ -4,7 +4,8 @@ using System.Linq;
 namespace MetricsManager.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
+
     public class CrudController : ControllerBase
     {
         private readonly ValuesHolder holder;
@@ -15,7 +16,6 @@ namespace MetricsManager.Controllers
         }
 
         [HttpPost("create")]
-//        [HttpPost]
         public IActionResult Create([FromQuery] string input)
         {
             holder.Values.Add(input);
@@ -36,7 +36,6 @@ namespace MetricsManager.Controllers
                 if (holder.Values[i] == stringToUpdate)
                     holder.Values[i] = newValue;
             }
-
             return Ok();
         }
 
