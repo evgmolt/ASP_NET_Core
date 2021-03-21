@@ -17,12 +17,18 @@ namespace MetricsManager.Controllers
             return Ok();
         }
         [HttpPut("enable/{agentId}")]
-        public IActionResult EnableAgentById([FromRoute] int agentId
+        public IActionResult EnableAgentById([FromRoute] int agentId)
         {
             return Ok();
         }
         [HttpPut("disable/{agentId}")]
         public IActionResult DisableAgentById([FromRoute] int agentId)
+        {
+            return Ok();
+        }
+
+        [HttpGet("getagents")]
+        public IActionResult GetAgentsList()
         {
             return Ok();
         }
