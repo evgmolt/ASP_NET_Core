@@ -8,33 +8,33 @@ namespace MetricsManager.Controllers
 
     public class CrudController : ControllerBase
     {
-        private readonly ValuesHolder holder;
+        private readonly ValuesHolder _holder;
 
         public CrudController(ValuesHolder holder)
         {
-            this.holder = holder;
+            this._holder = holder;
         }
 
         [HttpPost("create")]
         public IActionResult Create([FromQuery] string input)
         {
-            holder.Values.Add(input);
+            _holder.Values.Add(input);
             return Ok();
         }
 
         [HttpGet("read")]
         public IActionResult Read()
         {
-            return Ok(holder.Values);
+            return Ok(_holder.Values);
         }
 
         [HttpPut("update")]
         public IActionResult Update([FromQuery] string stringToUpdate, [FromQuery] string newValue)
         {
-            for (int i = 0; i < holder.Values.Count; i++)
+            for (int i = 0; i < _holder.Values.Count; i++)
             {
-                if (holder.Values[i] == stringToUpdate)
-                    holder.Values[i] = newValue;
+                if (_holder.Values[i] == stringToUpdate)
+                    _holder.Values[i] = newValue;
             }
             return Ok();
         }
@@ -42,7 +42,7 @@ namespace MetricsManager.Controllers
         [HttpDelete("delete")]
         public IActionResult Delete([FromQuery] string input)
         {
-            holder.Values = holder.Values.Where(w => w != input).ToList();
+            _holder.Values = _holder.Values.Where(w => w != input).ToList();
             return Ok();
         }
     }
