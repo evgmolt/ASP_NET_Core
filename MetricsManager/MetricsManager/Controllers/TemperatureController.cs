@@ -12,11 +12,11 @@ namespace MetricsManager.Controllers
 
     public class TemperatureController : ControllerBase
     {
-        private readonly ValuesHolder holder;
+        private readonly TemperatureHolder _holder;
 
-        public TemperatureController(ValuesHolder holder)
+        public TemperatureController(TemperatureHolder holder)
         {
-            this.holder = holder;
+            this._holder = holder;
         }
 
         [HttpPost("create")] //Возможность сохранить температуру в указанное время
@@ -26,34 +26,31 @@ namespace MetricsManager.Controllers
             {
                 timeToAdd = DateTime.Now;
             }
-            holder.TemperatureList.Add(new WeatherForecast(timeToAdd, temperatureS, ""));
+            _holder.TemperatureList.Add(new Temperature(timeToAdd, temperatureS));
             return Ok();
         }
 
         [HttpPut("update")] //Возможность отредактировать показатель температуры в указанное время
         public IActionResult Update([FromQuery] DateTime timeToChange, [FromQuery] int newTemperature)
         {
-            for (int i = 0; i < holder.TemperatureList.Count; i++)
+            for (int i = 0; i < _holder.TemperatureList.Count; i++)
             {
-                if (holder.TemperatureList[i].Date == timeToChange)
+                if (_holder.TemperatureList[i].Date == timeToChange)
                 {
-                    holder.TemperatureList[i].TemperatureC = newTemperature;                    
+                    _holder.TemperatureList[i].TemperatureValue = newTemperature;                    
                 }
             }
             return Ok();
         }
 
-
-
         [HttpDelete("deleteinterval")] //Возможность удалить показатель температуры в указанный промежуток времени
         public IActionResult DeleteInterval([FromQuery] DateTime timeFrom, [FromQuery] DateTime timeTo)
         {
-            List<WeatherForecast> resultList = new List<WeatherForecast>();
-            for (int i = 0; i < holder.TemperatureList.Count(); i++)
+            for (int i = 0; i < _holder.TemperatureList.Count(); i++)
             {
-                if (holder.TemperatureList[i].Date > timeFrom && holder.TemperatureList[i].Date < timeTo)
+                if (_holder.TemperatureList[i].Date >= timeFrom && _holder.TemperatureList[i].Date <= timeTo)
                 {
-                    resultList.RemoveAt((int)i);
+                    _holder.TemperatureList.RemoveAt(i);
                 }
             }
             return Ok();
@@ -62,11 +59,11 @@ namespace MetricsManager.Controllers
         [HttpGet("readinterval")] //Возможность прочитать список показателей температуры за указанный промежуток времени
         public IActionResult ReadInterval([FromQuery] DateTime timeFrom, [FromQuery] DateTime timeTo)
         {
-            List<WeatherForecast> resultList = new List<WeatherForecast>();
-            for (int i = 0; i < holder.TemperatureList.Count(); i++)
+            List<Temperature> resultList = new List<Temperature>();
+            for (int i = 0; i < _holder.TemperatureList.Count(); i++)
             {
-                if (holder.TemperatureList[i].Date > timeFrom && holder.TemperatureList[i].Date < timeTo)
-                    resultList.Add(holder.TemperatureList[i]);
+                if (_holder.TemperatureList[i].Date >= timeFrom && _holder.TemperatureList[i].Date <= timeTo)
+                    resultList.Add(_holder.TemperatureList[i]);
             }
             return Ok(resultList);
         }
