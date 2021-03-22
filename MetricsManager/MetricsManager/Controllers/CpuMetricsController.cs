@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsManager.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,15 +8,6 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
-    public enum Percentile
-    {
-        Median = 0,
-        P75 = 1,
-        P90 = 2,
-        P95 = 3,
-        P99 = 4
-    }
-
     [Route("api/metrics/cpu")]
     [ApiController]
     public class CpuMetricsController : ControllerBase
@@ -28,6 +20,7 @@ namespace MetricsManager.Controllers
         {
             return Ok();
         }
+
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentileFromAgent(
             [FromRoute] int agentId,
@@ -36,6 +29,7 @@ namespace MetricsManager.Controllers
         {
             return Ok();
         }
+
         [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetricsFromAllCluster(
             [FromRoute] TimeSpan fromTime,
@@ -43,6 +37,7 @@ namespace MetricsManager.Controllers
         {
             return Ok();
         }
+
         [HttpGet("cluster/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentileFromAllCluster(
             [FromRoute] TimeSpan fromTime, 

@@ -14,6 +14,14 @@ namespace MetricsManager.Controllers
         [HttpPost("register")]
         public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
         {
+//      Пытаюсь "дернуть" этот метод следующим запросом:
+//      POST http://localhost:5000/api/agents/register
+//      BODY:
+//        {
+//              "AgentId" : 333,
+//              "AgentAddress" : 111111
+//        }
+//      Не получается получить параметр, AgentInfo - 0 и null. JSON неправильный, или что?
             return Ok();
         }
         [HttpPut("enable/{agentId}")]

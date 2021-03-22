@@ -1,14 +1,14 @@
-using MetricsManager.Controllers;
+using MetricsAgent.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using Xunit;
 
-namespace MetricsManagerTests
+namespace MetricsAgentTests
 {
-    public class MetricsControllerTest
+    public class CpuMetricsAgentControllersTest
     {
         private CpuMetricsController controller;
-        public MetricsControllerTest()
+        public CpuMetricsAgentControllersTest()
         {
             controller = new CpuMetricsController();
         }
@@ -26,10 +26,10 @@ namespace MetricsManagerTests
         }
     }
 
-    public class DotNetMetricsControllerTest
+    public class DotNetMetricsAgentControllersTest
     {
         private DotNetMetricsController controller;
-        public DotNetMetricsControllerTest()
+        public DotNetMetricsAgentControllersTest()
         {
             controller = new DotNetMetricsController();
         }
@@ -47,10 +47,10 @@ namespace MetricsManagerTests
         }
     }
 
-    public class HddMetricsControllerTest
+    public class HddMetricsAgentControllersTest
     {
         private HddMetricsController controller;
-        public HddMetricsControllerTest()
+        public HddMetricsAgentControllersTest()
         {
             controller = new HddMetricsController();
         }
@@ -59,19 +59,17 @@ namespace MetricsManagerTests
         {
             //Arrange
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
             //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var result = controller.GetMetricsFromAgent(agentId);
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
     }
 
-    public class NetworkMetricsControllerTest
+    public class NetworkMetricsAgentControllersTest
     {
         private NetworkMetricsController controller;
-        public NetworkMetricsControllerTest()
+        public NetworkMetricsAgentControllersTest()
         {
             controller = new NetworkMetricsController();
         }
@@ -89,10 +87,10 @@ namespace MetricsManagerTests
         }
     }
 
-    public class RamMetricsControllerTest
+    public class RamMetricsAgentControllersTest
     {
         private RamMetricsController controller;
-        public RamMetricsControllerTest()
+        public RamMetricsAgentControllersTest()
         {
             controller = new RamMetricsController();
         }
@@ -101,10 +99,8 @@ namespace MetricsManagerTests
         {
             //Arrange
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
             //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var result = controller.GetMetricsFromAgent(agentId);
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
