@@ -35,8 +35,10 @@ namespace MetricsManager.Controllers
         public IActionResult GetMetricsByPercentileFromAgent(
             [FromRoute] int agentId,
             [FromRoute] TimeSpan fromTime, 
-            [FromRoute] TimeSpan toTime)
+            [FromRoute] TimeSpan toTime,
+            [FromRoute] Percentile percentile)
         {
+            _logger.LogInformation($"GetMetricsByPercentileFromAgent:{agentId} from:{fromTime} to:{toTime} percentiles:{percentile}");
             return Ok();
         }
 
@@ -45,6 +47,7 @@ namespace MetricsManager.Controllers
             [FromRoute] TimeSpan fromTime,
             [FromRoute] TimeSpan toTime)
         {
+            _logger.LogInformation($"GetMetricsFromAllCluster from:{fromTime} to:{toTime}");
             return Ok();
         }
 
@@ -54,6 +57,7 @@ namespace MetricsManager.Controllers
             [FromRoute] TimeSpan toTime,
             [FromRoute] Percentile percentile)
         {
+            _logger.LogInformation($"GetMetricsByPercentileFromAllCluster from:{fromTime} to:{toTime} percentiles:{percentile}");
             return Ok();
         }
     }

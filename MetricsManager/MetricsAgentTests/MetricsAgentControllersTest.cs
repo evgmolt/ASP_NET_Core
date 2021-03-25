@@ -1,5 +1,6 @@
 using MetricsAgent.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using Xunit;
 
@@ -8,19 +9,21 @@ namespace MetricsAgentTests
     public class CpuMetricsAgentControllersTest
     {
         private CpuMetricsController controller;
-        public CpuMetricsAgentControllersTest()
+        private readonly ILogger<CpuMetricsController> _logger;
+
+        public CpuMetricsAgentControllersTest(ILogger<CpuMetricsController> logger)
         {
-            controller = new CpuMetricsController();
+            _logger = logger;
+            controller = new CpuMetricsController(_logger);
         }
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetMetrics_ReturnsOk()
         {
             //Arrange
-            var agentId = 1;
             var fromTime = TimeSpan.FromSeconds(0);
             var toTime = TimeSpan.FromSeconds(100);
             //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var result = controller.GetMetrics(fromTime, toTime);
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
@@ -29,19 +32,21 @@ namespace MetricsAgentTests
     public class DotNetMetricsAgentControllersTest
     {
         private DotNetMetricsController controller;
-        public DotNetMetricsAgentControllersTest()
+        private readonly ILogger<DotNetMetricsController> _logger;
+
+        public DotNetMetricsAgentControllersTest(ILogger<DotNetMetricsController> logger)
         {
-            controller = new DotNetMetricsController();
+            _logger = logger;
+            controller = new DotNetMetricsController(_logger);
         }
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetMetrics_ReturnsOk()
         {
             //Arrange
-            var agentId = 1;
             var fromTime = TimeSpan.FromSeconds(0);
             var toTime = TimeSpan.FromSeconds(100);
             //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var result = controller.GetMetrics(fromTime, toTime);
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
@@ -50,17 +55,19 @@ namespace MetricsAgentTests
     public class HddMetricsAgentControllersTest
     {
         private HddMetricsController controller;
-        public HddMetricsAgentControllersTest()
+        private readonly ILogger<HddMetricsController> _logger;
+
+        public HddMetricsAgentControllersTest(ILogger<HddMetricsController> logger)
         {
-            controller = new HddMetricsController();
+            _logger = logger;
+            controller = new HddMetricsController(_logger);
         }
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetMetrics_ReturnsOk()
         {
             //Arrange
-            var agentId = 1;
             //Act
-            var result = controller.GetMetricsFromAgent(agentId);
+            var result = controller.GetMetrics();
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
@@ -69,19 +76,21 @@ namespace MetricsAgentTests
     public class NetworkMetricsAgentControllersTest
     {
         private NetworkMetricsController controller;
-        public NetworkMetricsAgentControllersTest()
+        private readonly ILogger<NetworkMetricsController> _logger;
+
+        public NetworkMetricsAgentControllersTest(ILogger<NetworkMetricsController> logger)
         {
-            controller = new NetworkMetricsController();
+            _logger = logger;
+            controller = new NetworkMetricsController(_logger);
         }
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetMetrics_ReturnsOk()
         {
             //Arrange
-            var agentId = 1;
             var fromTime = TimeSpan.FromSeconds(0);
             var toTime = TimeSpan.FromSeconds(100);
             //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var result = controller.GetMetrics(fromTime, toTime);
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
@@ -90,17 +99,19 @@ namespace MetricsAgentTests
     public class RamMetricsAgentControllersTest
     {
         private RamMetricsController controller;
-        public RamMetricsAgentControllersTest()
+        private readonly ILogger<RamMetricsController> _logger;
+
+        public RamMetricsAgentControllersTest(ILogger<RamMetricsController> logger)
         {
-            controller = new RamMetricsController();
+            _logger = logger;
+            controller = new RamMetricsController(_logger);
         }
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetMetricsa_ReturnsOk()
         {
             //Arrange
-            var agentId = 1;
             //Act
-            var result = controller.GetMetricsFromAgent(agentId);
+            var result = controller.GetMetrics();
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
