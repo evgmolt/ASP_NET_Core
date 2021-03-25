@@ -27,7 +27,7 @@ namespace MetricsManager.Controllers
             [FromRoute] TimeSpan fromTime, 
             [FromRoute] TimeSpan toTime)
         {
-            _logger.LogInformation("Привет! Это наше первое сообщение в лог");
+            _logger.LogInformation($"GetMetricsFromAgent:{agentId} from:{fromTime} to:{toTime}");
             return Ok();
         }
 
