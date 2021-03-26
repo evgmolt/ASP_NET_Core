@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsManager
+namespace MetricsAgent.DAL.Interfaces
 {
-    public interface ICpuMetricsRepository : IRepository<CpuMetric>
+    interface ICpuMetricsRepository IRepository<CpuMetric>
     {
     }
 
     public class CpuMetricsRepository : ICpuMetricsRepository
     {
+        // наше соединение с базой данных
         private SQLiteConnection connection;
-
+        // инжектируем соединение с базой данных в наш репозиторий через конструктор
         public CpuMetricsRepository(SQLiteConnection connection)
         {
             this.connection = connection;
         }
-
+        
         public void Create(CpuMetric item)
         {
             // создаем команду
@@ -27,10 +27,12 @@ namespace MetricsManager
             cmd.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(@value, @time)";
             // добавляем параметры в запрос из нашего объекта
             cmd.Parameters.AddWithValue("@value", item.Value);
-            // в таблице будем хранить время в секундах, потому преобразуем перед записью в секунды
+            // в таблице будем хранить время в секундах, потому преобразуем перед записью в секунды    
             // через свойство
             cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
+            // подготовка команды к выполнению
             cmd.Prepare();
+            // выполнение команды
             cmd.ExecuteNonQuery();
         }
 
@@ -40,6 +42,17 @@ namespace MetricsManager
             // прописываем в команду SQL запрос на удаление данных
             cmd.CommandText = "DELETE FROM cpumetrics WHERE id=@id";
             cmd.Parameters.AddWithValue("@id", id);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+        }
+        public void Update(CpuMetric item)
+        {
+            using var cmd = new SQLiteCommand(connection);
+            // прописываем в команду SQL запрос на обновление данных
+            cmd.CommandText = "UPDATE cpumetrics SET value = @value, time = @time WHERE id = @id; ";
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@value", item.Value);
+            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
         }
@@ -67,7 +80,6 @@ namespace MetricsManager
             }
             return returnList;
         }
-
         public CpuMetric GetById(int id)
         {
             using var cmd = new SQLiteCommand(connection);
@@ -92,17 +104,5 @@ namespace MetricsManager
                 }
             }
         }
-
-        public void Update(CpuMetric item)
-        {
-            using var cmd = new SQLiteCommand(connection);
-            // прописываем в команду SQL запрос на обновление данных
-            cmd.CommandText = "UPDATE cpumetrics SET value = @value, time = @time WHERE id = @id; ";
-            cmd.Parameters.AddWithValue("@id", item.Id);
-            cmd.Parameters.AddWithValue("@value", item.Value);
-            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
-        }
-    }
+}
 }
