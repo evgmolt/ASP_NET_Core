@@ -13,11 +13,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Enums\Enums.csproj" />
   </ItemGroup>
   
   <ItemGroup>
     <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="DAL\Interfaces\" />
   </ItemGroup>
 
 </Project>

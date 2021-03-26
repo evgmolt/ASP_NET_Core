@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Interfaces
+namespace DAL
 {
     public interface ICpuMetricsRepository : IRepository<CpuMetric>
     {

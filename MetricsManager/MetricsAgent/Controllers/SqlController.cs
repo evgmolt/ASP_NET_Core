@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsAgent.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -6,11 +7,10 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsManager.Controllers
+namespace MetricsAgent.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class SqlController : ControllerBase
     {
         [HttpGet("sql-test")]
@@ -77,7 +77,7 @@ namespace MetricsManager.Controllers
                             {
                                 Id = reader.GetInt32(0), // читаем данные полученные из базы данных
                                 Value = reader.GetInt32(0), // преобразуя к целочисленному типу
-                                Time = reader.GetInt32(0)
+                                Time = reader.GetDateTime(0)
                             };
                             // увеличиваем значение счетчика
                             counter++;

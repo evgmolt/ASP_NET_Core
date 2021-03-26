@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MetricsAgent.DAL.Interfaces
 {
-    interface ICpuMetricsRepository IRepository<CpuMetric>
+    public interface ICpuMetricsRepository : IRepository<CpuMetric>
     {
     }
 
