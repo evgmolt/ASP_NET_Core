@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Responses
 {
-    public class AllCpuMetricsResponse
+    public class AllDotNetMetricsResponse
     {
-        public List<CpuMetricDto> Metrics { get; set; }
+        public List<DotNetMetricDto> Metrics { get; set; }
     }
 
-    public class CpuMetricDto
+    public class DotNetMetricDto
     {
         public int Id { get; set; }
         public int Value { get; set; }

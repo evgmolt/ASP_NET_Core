@@ -1,63 +1,78 @@
 ﻿using Core;
+using DAL;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DAL
+namespace MetricsAgent.DAL.Repositories
 {
-    public interface ICpuMetricsRepository : IRepository<CpuMetric>
+    public class NetworkMetricsRepository : INetworkMetricsRepository
     {
-    }
+        private SQLiteConnection _connection;
+        private string _tablename;
 
-    public class CpuMetricsRepository : ICpuMetricsRepository
-    {
-        private SQLiteConnection connection;
-
-        public CpuMetricsRepository(SQLiteConnection connection)
+        public NetworkMetricsRepository(SQLiteConnection connection)
         {
-            this.connection = connection;
+            _tablename = Strings.TableNames[(int)Enums.MetricsNames.Network];
+            this._connection = connection;
         }
 
-        public void Create(CpuMetric item)
+        public void Create(NetworkMetric item)
         {
             // создаем команду
-            using var cmd = new SQLiteCommand(connection);
+            using var cmd = new SQLiteCommand(_connection);
             // прописываем в команду SQL запрос на вставку данных
-            cmd.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(@value, @time)";
+            cmd.CommandText = "INSERT INTO " + _tablename + "(value, time) VALUES(@value, @time)";
             // добавляем параметры в запрос из нашего объекта
             cmd.Parameters.AddWithValue("@value", item.Value);
             // в таблице будем хранить время в секундах, потому преобразуем перед записью в секунды
             // через свойство
             cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
+            // подготовка команды к выполнению
             cmd.Prepare();
+            // выполнение команды
             cmd.ExecuteNonQuery();
         }
 
         public void Delete(int id)
         {
-            using var cmd = new SQLiteCommand(connection);
+            using var cmd = new SQLiteCommand(_connection);
             // прописываем в команду SQL запрос на удаление данных
-            cmd.CommandText = "DELETE FROM cpumetrics WHERE id=@id";
+            cmd.CommandText = "DELETE FROM " + _tablename + " WHERE id=@id";
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
         }
 
-        public IList<CpuMetric> GetAll()
+        public void Update(NetworkMetric item)
         {
-            using var cmd = new SQLiteCommand(connection);
+            using var cmd = new SQLiteCommand(_connection);
+            // прописываем в команду SQL запрос на обновление данных
+            cmd.CommandText = "UPDATE " + _tablename + " SET value = @value, time = @time WHERE id = @id; ";
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@value", item.Value);
+            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+        }
+
+        public IList<NetworkMetric> GetAll()
+        {
+            using var cmd = new SQLiteCommand(_connection);
             // прописываем в команду SQL запрос на получение всех данных из таблицы
-            cmd.CommandText = "SELECT * FROM cpumetrics";
-            var returnList = new List<CpuMetric>();
+            cmd.CommandText = "SELECT * FROM " + _tablename;
+            var returnList = new List<NetworkMetric>();
             using (SQLiteDataReader reader = cmd.ExecuteReader())
             {
                 // пока есть что читать -- читаем
                 while (reader.Read())
                 {
                     // добавляем объект в список возврата
-                    returnList.Add(new CpuMetric
+                    returnList.Add(new NetworkMetric
                     {
                         Id = reader.GetInt32(0),
                         Value = reader.GetInt32(0),
@@ -69,17 +84,17 @@ namespace DAL
             return returnList;
         }
 
-        public CpuMetric GetById(int id)
+        public NetworkMetric GetById(int id)
         {
-            using var cmd = new SQLiteCommand(connection);
-            cmd.CommandText = "SELECT * FROM cpumetrics WHERE id=@id";
+            using var cmd = new SQLiteCommand(_connection);
+            cmd.CommandText = "SELECT * FROM " + _tablename + " WHERE id=@id";
             using (SQLiteDataReader reader = cmd.ExecuteReader())
             {
                 // если удалось что то прочитать
                 if (reader.Read())
                 {
                     // возвращаем прочитанное
-                    return new CpuMetric
+                    return new NetworkMetric
                     {
                         Id = reader.GetInt32(0),
                         Value = reader.GetInt32(0),
@@ -92,18 +107,6 @@ namespace DAL
                     return null;
                 }
             }
-        }
-
-        public void Update(CpuMetric item)
-        {
-            using var cmd = new SQLiteCommand(connection);
-            // прописываем в команду SQL запрос на обновление данных
-            cmd.CommandText = "UPDATE cpumetrics SET value = @value, time = @time WHERE id = @id; ";
-            cmd.Parameters.AddWithValue("@id", item.Id);
-            cmd.Parameters.AddWithValue("@value", item.Value);
-            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
         }
     }
 }

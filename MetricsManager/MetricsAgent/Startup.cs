@@ -1,4 +1,6 @@
+using Core;
 using MetricsAgent.DAL.Interfaces;
+using MetricsAgent.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +32,10 @@ namespace MetricsAgent
             services.AddControllers();
             ConfigureSqlLiteConnection(services);
             services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
+            services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
+            services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
+            services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
+            services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
@@ -42,17 +48,38 @@ namespace MetricsAgent
         }
         private void PrepareSchema(SQLiteConnection connection)
         {
+            for (int i = 0; i < Strings.TableNames.Count(); i++)
+            {
+                CreateTable(connection, Strings.TableNames[i]);
+                FillTable(connection, Strings.TableNames[i]);
+            }
+        }
+
+        private void CreateTable(SQLiteConnection connection, string tablename)
+        {
             using (var command = new SQLiteCommand(connection))
             {
-                // задаем новый текст команды для выполнения
-                // удаляем таблицу с метриками если она существует в базе данных
-                command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
-                // отправляем запрос в базу данных
+                command.CommandText = "DROP TABLE IF EXISTS " + tablename;
                 command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
+                command.CommandText = @"CREATE TABLE " + tablename + "(id INTEGER PRIMARY KEY, value INT, time INT)";
                 command.ExecuteNonQuery();
             }
         }
+
+        private void FillTable(SQLiteConnection connection, string tablename)
+        {
+            int _numOfRecords = 10;
+            using (var command = new SQLiteCommand(connection))
+            {
+                Random rand = new Random();
+                for (int i = 0; i < _numOfRecords; i++)
+                {
+                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + i.ToString() + ")";
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

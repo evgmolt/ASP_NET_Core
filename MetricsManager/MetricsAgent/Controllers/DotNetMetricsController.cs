@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsAgent.DAL.Interfaces;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.Requests;
+using MetricsAgent.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,20 +16,48 @@ namespace MetricsAgent.Controllers
     [ApiController]
     public class DotNetMetricsController : ControllerBase
     {
+        private IDotNetMetricsRepository _repository;
         private readonly ILogger<DotNetMetricsController> _logger;
 
-        public DotNetMetricsController(ILogger<DotNetMetricsController> logger)
+        public DotNetMetricsController(ILogger<DotNetMetricsController> logger, IDotNetMetricsRepository repository)
         {
+            this._repository = repository;
             _logger = logger;
             _logger.LogDebug(1, "NLog встроен в DotNetMetricsController");
         }
 
+        [HttpPost("create")]
+        public IActionResult Create([FromBody] DotNetMetricCreateRequest request)
+        {
+            _repository.Create(new DotNetMetric
+            {
+                Time = request.Time,
+                Value = request.Value
+            });
+            return Ok();
+        }
+
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics(
-            [FromRoute] TimeSpan fromTime,
-            [FromRoute] TimeSpan toTime)
+            [FromRoute] int fromTime,
+            [FromRoute] int toTime)
         {
+
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
+            var metrics = _repository.GetAll();
+            var response = new AllDotNetMetricsResponse()
+            {
+                Metrics = new List<DotNetMetricDto>()
+            };
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(new DotNetMetricDto
+                {
+                    Time = metric.Time,
+                    Value = metric.Value,
+                    Id = metric.Id
+                });
+            }
             return Ok();
         }
     }

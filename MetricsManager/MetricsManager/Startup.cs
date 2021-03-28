@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using DAL;
+using MetricsManager.DAL.Interfaces;
 
 namespace MetricsManager
 {

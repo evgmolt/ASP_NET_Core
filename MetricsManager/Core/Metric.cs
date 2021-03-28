@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace MetricsAgent.DAL.Interfaces
+namespace Core
 {
-    public class CpuMetric
+    public class Metric
     {
         public int Id { get; set; }
         public int Value { get; set; }

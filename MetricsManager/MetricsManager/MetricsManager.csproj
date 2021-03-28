@@ -20,9 +20,5 @@
   <ItemGroup>
     <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="DAL\Interfaces\" />
-  </ItemGroup>
 
 </Project>

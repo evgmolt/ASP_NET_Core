@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
+//Это для проверки сделал, уберу потом
 namespace MetricsAgent.Controllers
 {
     [Route("api/[controller]")]
@@ -77,7 +78,7 @@ namespace MetricsAgent.Controllers
                             {
                                 Id = reader.GetInt32(0), // читаем данные полученные из базы данных
                                 Value = reader.GetInt32(0), // преобразуя к целочисленному типу
-                                Time = reader.GetDateTime(0)
+//                                Time = reader.GetDateTime(0)
                             };
                             // увеличиваем значение счетчика
                             counter++;

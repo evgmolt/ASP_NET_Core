@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Responses
+namespace MetricsAgent.DAL.Models
 {
-    public class AllCpuMetricsResponse
-    {
-        public List<CpuMetricDto> Metrics { get; set; }
-    }
-
-    public class CpuMetricDto
+    public class DotNetMetric
     {
         public int Id { get; set; }
         public int Value { get; set; }
