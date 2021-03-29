@@ -1,12 +1,16 @@
-﻿using Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.DAL.Models
+namespace MetricsAgent.Responses
 {
-    public class RamMetric 
+    public class NetworkMetricsResponse
+    {
+        public List<NetworkMetricDto> Metrics { get; set; }
+    }
+
+    public class NetworkMetricDto
     {
         public int Id { get; set; }
         public int Value { get; set; }

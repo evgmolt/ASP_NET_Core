@@ -68,7 +68,7 @@ namespace MetricsAgent
 
         private void FillTable(SQLiteConnection connection, string tablename)
         {
-            int _numOfRecords = 10;
+            int _numOfRecords = 5;
             using (var command = new SQLiteCommand(connection))
             {
                 Random rand = new Random();

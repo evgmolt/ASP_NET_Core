@@ -107,5 +107,9 @@ namespace DAL
                 }
             }
         }
+
+        public IList<CpuMetric> GetByTimePeriod(int timeFrom, int timeTo)
+        {
+        }
     }
 }

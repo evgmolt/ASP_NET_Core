@@ -52,7 +52,7 @@ namespace MetricsManager
                 command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
                 // отправляем запрос в базу данных
                 command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
+                command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, agentid INT, value INT, time INT)";
                 command.ExecuteNonQuery();
             }
         }

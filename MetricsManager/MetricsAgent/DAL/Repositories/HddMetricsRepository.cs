@@ -74,9 +74,9 @@ namespace MetricsAgent.DAL.Repositories
                     returnList.Add(new HddMetric
                     {
                         Id = reader.GetInt32(0),
-                        Value = reader.GetInt32(0),
+                        Value = reader.GetInt32(1),
                         // налету преобразуем прочитанные секунды в метку времени
-                        Time = reader.GetInt32(0)
+                        Time = reader.GetInt32(2)
                     });
                 }
             }
@@ -96,8 +96,8 @@ namespace MetricsAgent.DAL.Repositories
                     return new HddMetric
                     {
                         Id = reader.GetInt32(0),
-                        Value = reader.GetInt32(0),
-                        Time = reader.GetInt32(0)
+                        Value = reader.GetInt32(1),
+                        Time = reader.GetInt32(2)
                     };
                 }
                 else
@@ -106,6 +106,28 @@ namespace MetricsAgent.DAL.Repositories
                     return null;
                 }
             }
+        }
+
+        public IList<HddMetric> GetByTimePeriod(int timeFrom, int timeTo)
+        {
+            using var cmd = new SQLiteCommand(_connection);
+            string stimeFrom = timeFrom.ToString();
+            string stimeTo = timeTo.ToString();
+            cmd.CommandText = "SELECT * FROM " + _tablename + " WHERE (time > " + stimeFrom + ") AND (time < " + stimeTo + ")";
+            var returnList = new List<HddMetric>();
+            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    returnList.Add(new HddMetric
+                    {
+                        Id = reader.GetInt32(0),
+                        Value = reader.GetInt32(1),
+                        Time = reader.GetInt32(2)
+                    });
+                }
+            }
+            return returnList;
         }
     }
 }

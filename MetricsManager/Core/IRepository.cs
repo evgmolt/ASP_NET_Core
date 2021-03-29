@@ -7,6 +7,8 @@ namespace Core
     {
         IList<T> GetAll();
 
+        IList<T> GetByTimePeriod(int timeFrom, int timeTo);
+
         T GetById(int id);
 
         void Create(T item);

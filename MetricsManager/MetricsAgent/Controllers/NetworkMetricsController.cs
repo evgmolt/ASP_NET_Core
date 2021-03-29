@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
         {
             this._repository = repository;
             _logger = logger;
-            _logger.LogDebug(1, "NLog встроен в NetworkMetricsController");
+            _logger.LogInformation(1, "NLog встроен в NetworkMetricsController");
         }
 
         [HttpPost("create")]
@@ -43,11 +43,13 @@ namespace MetricsAgent.Controllers
             [FromRoute] int toTime)
         {
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
-            var metrics = _repository.GetAll();
-            var response = new AllNetworkMetricsResponse()
+
+            var metrics = _repository.GetByTimePeriod(fromTime, toTime);
+            var response = new NetworkMetricsResponse()
             {
                 Metrics = new List<NetworkMetricDto>()
             };
+
             foreach (var metric in metrics)
             {
                 response.Metrics.Add(new NetworkMetricDto
@@ -57,6 +59,7 @@ namespace MetricsAgent.Controllers
                     Id = metric.Id
                 });
             }
+
             return Ok();
         }
     }

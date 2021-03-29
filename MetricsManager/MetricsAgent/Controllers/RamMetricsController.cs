@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
         {
             this._repository = repository;
             _logger = logger;
-            _logger.LogDebug(1, "NLog встроен в RamMetricsController");
+            _logger.LogInformation(1, "NLog встроен в RamMetricsController");
         }
 
         [HttpPost("create")]
@@ -41,8 +41,9 @@ namespace MetricsAgent.Controllers
         public IActionResult GetMetrics()
         {
             _logger.LogInformation($"GetMetrics");
+
             var metrics = _repository.GetAll();
-            var response = new AllRamMetricsResponse()
+            var response = new RamMetricsResponse()
             {
                 Metrics = new List<RamMetricDto>()
             };

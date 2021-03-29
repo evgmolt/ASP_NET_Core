@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
         {
             this._repository = repository;
             _logger = logger;
-            _logger.LogDebug(1, "NLog встроен в HddMetricsController");
+            _logger.LogInformation(1, "NLog встроен в HddMetricsController");
         }
 
         [HttpPost("create")]
@@ -41,7 +41,7 @@ namespace MetricsAgent.Controllers
         public IActionResult GetMetrics()
         {
             var metrics = _repository.GetAll();
-            var response = new AllHddMetricsResponse()
+            var response = new HddMetricsResponse()
             {
                 Metrics = new List<HddMetricDto>()
             };

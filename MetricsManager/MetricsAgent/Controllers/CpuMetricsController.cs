@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
         {
             this._repository = repository;
             _logger = logger;
-            _logger.LogDebug(1, "NLog встроен в CpuMetricsController");
+            _logger.LogInformation(1, "NLog встроен в CpuMetricsController");
         }
 
         [HttpPost("create")]
@@ -43,11 +43,13 @@ namespace MetricsAgent.Controllers
             [FromRoute] int toTime)
         {
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
-            var metrics = _repository.GetAll();
-            var response = new AllCpuMetricsResponse()
+
+            var metrics = _repository.GetByTimePeriod(fromTime, toTime);
+            var response = new CpuMetricsResponse()
             {
                 Metrics = new List<CpuMetricDto>()
             };
+
             foreach (var metric in metrics)
             {
                 response.Metrics.Add(new CpuMetricDto
@@ -68,6 +70,7 @@ namespace MetricsAgent.Controllers
             [FromRoute] Percentile percentile)
         {
             _logger.LogInformation($"GetMetricsByPercentile from:{fromTime} to:{toTime} percentiles:{percentile}");
+
             return Ok();
         }
     }

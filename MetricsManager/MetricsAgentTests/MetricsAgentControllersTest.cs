@@ -24,18 +24,13 @@ namespace MetricsAgentTests
         [Fact]
         public void Create_ShouldCall_Create_From_Repository()
         {
-            // устанавливаем параметр заглушки
-            // в заглушке прописываем что в репозиторий прилетит CpuMetric объект
             mock2.Setup(repository =>
             repository.Create(It.IsAny<CpuMetric>())).Verifiable();
-            // выполняем действие на контроллере
             var result = controller.Create(new MetricsAgent.Requests.CpuMetricCreateRequest
             {
                 Time = 1,
                 Value = 50
             });
-            // проверяем заглушку на то, что пока работал контроллер
-            // действительно вызвался метод Create репозитория с нужным типом объекта в параметре
             mock2.Verify(repository => repository.Create(It.IsAny<CpuMetric>()), Times.AtMostOnce());
         }
     }
@@ -55,18 +50,13 @@ namespace MetricsAgentTests
         [Fact]
         public void Create_ShouldCall_Create_From_Repository()
         {
-            // устанавливаем параметр заглушки
-            // в заглушке прописываем что в репозиторий прилетит DotNetMetric объект
             mock2.Setup(repository =>
             repository.Create(It.IsAny<DotNetMetric>())).Verifiable();
-            // выполняем действие на контроллере
             var result = controller.Create(new MetricsAgent.Requests.DotNetMetricCreateRequest
             {
                 Time = 1,
                 Value = 50
             });
-            // проверяем заглушку на то, что пока работал контроллер
-            // действительно вызвался метод Create репозитория с нужным типом объекта в параметре
             mock2.Verify(repository => repository.Create(It.IsAny<DotNetMetric>()), Times.AtMostOnce());
         }
     }
@@ -86,21 +76,15 @@ namespace MetricsAgentTests
         [Fact]
         public void Create_ShouldCall_Create_From_Repository()
         {
-            // устанавливаем параметр заглушки
-            // в заглушке прописываем что в репозиторий прилетит HddMetric объект
             mock2.Setup(repository =>
             repository.Create(It.IsAny<HddMetric>())).Verifiable();
-            // выполняем действие на контроллере
             var result = controller.Create(new MetricsAgent.Requests.HddMetricCreateRequest
             {
                 Time = 1,
                 Value = 50
             });
-            // проверяем заглушку на то, что пока работал контроллер
-            // действительно вызвался метод Create репозитория с нужным типом объекта в параметре
             mock2.Verify(repository => repository.Create(It.IsAny<HddMetric>()), Times.AtMostOnce());
         }
-
     }
 
     public class NetworkMetricsAgentControllersTest
@@ -118,21 +102,15 @@ namespace MetricsAgentTests
         [Fact]
         public void Create_ShouldCall_Create_From_Repository()
         {
-            // устанавливаем параметр заглушки
-            // в заглушке прописываем что в репозиторий прилетит NetworkMetric объект
             mock2.Setup(repository =>
             repository.Create(It.IsAny<NetworkMetric>())).Verifiable();
-            // выполняем действие на контроллере
             var result = controller.Create(new MetricsAgent.Requests.NetworkMetricCreateRequest
             {
                 Time = 1,
                 Value = 50
             });
-            // проверяем заглушку на то, что пока работал контроллер
-            // действительно вызвался метод Create репозитория с нужным типом объекта в параметре
             mock2.Verify(repository => repository.Create(It.IsAny<NetworkMetric>()), Times.AtMostOnce());
         }
-
     }
 
     public class RamMetricsAgentControllersTest
@@ -150,20 +128,14 @@ namespace MetricsAgentTests
         [Fact]
         public void Create_ShouldCall_Create_From_Repository()
         {
-            // устанавливаем параметр заглушки
-            // в заглушке прописываем что в репозиторий прилетит RamMetric объект
             mock2.Setup(repository =>
             repository.Create(It.IsAny<RamMetric>())).Verifiable();
-            // выполняем действие на контроллере
             var result = controller.Create(new MetricsAgent.Requests.RamMetricCreateRequest
             {
                 Time = 1,
                 Value = 50
             });
-            // проверяем заглушку на то, что пока работал контроллер
-            // действительно вызвался метод Create репозитория с нужным типом объекта в параметре
             mock2.Verify(repository => repository.Create(It.IsAny<RamMetric>()), Times.AtMostOnce());
         }
-
     }
 }

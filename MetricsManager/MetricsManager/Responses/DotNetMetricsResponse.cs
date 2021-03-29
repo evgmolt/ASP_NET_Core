@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Responses
+namespace MetricsManager.Responses
 {
-    public class AllNetworkMetricsResponse
+    public class DotNetMetricsResponse
     {
-        public List<NetworkMetricDto> Metrics { get; set; }
+        public List<DotNetMetricDto> Metrics { get; set; }
     }
 
-    public class NetworkMetricDto
+    public class DotNetMetricDto
     {
         public int Id { get; set; }
+        public int AgentId { get; set; }
         public int Value { get; set; }
         public int Time { get; set; }
     }
