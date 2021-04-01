@@ -37,6 +37,9 @@ namespace MetricsAgent.Controllers
             return Ok();
         }
 
+        //рекомендовал бы тут юзать DateTimeOffset и на вход в API передавать человеческое время,
+        //и у метода repository GetByTimePeriod юзал бы сигнатуру(DateTimeOffset, DateTimeOffset)
+        //а уже внутри репозитори при формирования запроса к БД, где хранится число предложил бы сделать DateTimeOffset.ToUnixDatetime
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics(
             [FromRoute] int fromTime,
