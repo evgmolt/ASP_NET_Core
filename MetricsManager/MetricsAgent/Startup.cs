@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,17 +31,19 @@ namespace MetricsAgent
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            ConfigureSqlLiteConnection(services);
+//            ConfigureSqlLiteConnection(services);
             services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
-            services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
-            services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
-            services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
-            services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+            //services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
+            //services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
+            //services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
+            //services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
-            string connectionString = "Data Source=:memory:";
+            if (!File.Exists(Strings.DbFileName))
+                SQLiteConnection.CreateFile(Strings.DbFileName);
+            string connectionString = "Data Source=" + Strings.DbFileName;
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
             PrepareSchema(connection);
