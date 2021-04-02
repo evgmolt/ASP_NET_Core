@@ -11,21 +11,17 @@ namespace MetricsAgent.DAL.Repositories
 {
     public class CpuMetricsRepository : ICpuMetricsRepository
     {
-        private const string ConnectionString = "Data Source=metrics.db;Version=3;Pooling=True;Max Pool Size=100;";
-        private SQLiteConnection _connection;
         private string _tablename;
 
-//        public CpuMetricsRepository(SQLiteConnection connection)
         public CpuMetricsRepository()
         {
             SqlMapper.AddTypeHandler(new TimeSpanHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.Cpu];
-//            this._connection = connection;
         }
 
         public void Create(CpuMetric item)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
                 connection.Execute("INSERT INTO " + _tablename + "(value, time) VALUES(@value, @time)",
                 new
@@ -38,7 +34,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public void Delete(int id)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
                 connection.Execute("DELETE FROM " + _tablename + " WHERE id=@id",
                 new
@@ -50,7 +46,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public void Update(CpuMetric item)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
                 connection.Execute("UPDATE " + _tablename + " SET value = @value, time = @time WHERE id = @id",
                 new
@@ -64,7 +60,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public IList<CpuMetric> GetAll()
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
                 return connection.Query<CpuMetric>("SELECT Id, Time, Value FROM " + _tablename).ToList();
             }
@@ -72,7 +68,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public CpuMetric GetById(int id)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
                 return connection.QuerySingle<CpuMetric>("SELECT Id, Time, Value FROM " + _tablename + " WHERE id = @id",
                 new { id = id });
@@ -81,24 +77,14 @@ namespace MetricsAgent.DAL.Repositories
 
         public IList<CpuMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
         {
-            using var cmd = new SQLiteCommand(_connection);
-            string stimeFrom = timeFrom.ToUnixTimeSeconds().ToString();
-            string stimeTo = timeTo.ToUnixTimeSeconds().ToString();
-            cmd.CommandText = "SELECT * FROM " + _tablename + " WHERE (time > " + stimeFrom + ") AND (time < " + stimeTo + ")";
-            var returnList = new List<CpuMetric>();
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            long timefrom = timeFrom.ToUnixTimeSeconds();
+            long timeto = timeTo.ToUnixTimeSeconds();
+            using (var connection = new SQLiteConnection(Strings.ConnectionString))
             {
-                while (reader.Read())
-                {
-                    returnList.Add(new CpuMetric
-                    {
-                        Id = reader.GetInt32(0),
-                        Value = reader.GetInt32(1),
-                        Time = reader.GetInt32(2)
-                    });
-                }
+                return (IList<CpuMetric>)connection.Query<CpuMetric>(
+                    "SELECT Id, Time, Value FROM " + _tablename + " WHERE Time > @timefrom AND Time < @timeto",
+                new { timefrom = timefrom, timeto = timeto }) ;
             }
-            return returnList;
         }
     }
 }

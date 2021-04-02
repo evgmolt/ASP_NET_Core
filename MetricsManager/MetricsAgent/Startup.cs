@@ -1,4 +1,5 @@
 using Core;
+using Core.Interfaces;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -31,23 +32,25 @@ namespace MetricsAgent
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-//            ConfigureSqlLiteConnection(services);
+            ConfigureSqlLiteConnection(services);
             services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
-            //services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
-            //services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
-            //services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
-            //services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+            services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
+            services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
+            services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
+            services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+            services.AddTransient<INotifier, Notifier1>();
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
             if (!File.Exists(Strings.DbFileName))
+            {
                 SQLiteConnection.CreateFile(Strings.DbFileName);
-            string connectionString = "Data Source=" + Strings.DbFileName;
-            var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            PrepareSchema(connection);
-            services.AddSingleton(connection);
+                string connectionString = "Data Source=" + Strings.DbFileName;
+                var connection = new SQLiteConnection(connectionString);
+                connection.Open();
+                PrepareSchema(connection);
+            }
         }
         private void PrepareSchema(SQLiteConnection connection)
         {
@@ -78,7 +81,7 @@ namespace MetricsAgent
 
         private void FillTable(SQLiteConnection connection, string tablename)
         {
-            int _numOfRecords = 5;
+            int _numOfRecords = 10;
             using (var command = new SQLiteCommand(connection))
             {
                 Random rand = new Random();
