@@ -9,11 +9,4 @@ namespace MetricsAgent.Responses
     {
         public List<DotNetMetricDto> Metrics { get; set; }
     }
-
-    public class DotNetMetricDto
-    {
-        public int Id { get; set; }
-        public int Value { get; set; }
-        public int Time { get; set; }
-    }
 }

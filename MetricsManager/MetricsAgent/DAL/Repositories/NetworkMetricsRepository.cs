@@ -108,11 +108,11 @@ namespace MetricsAgent.DAL.Repositories
             }
         }
 
-        public IList<NetworkMetric> GetByTimePeriod(int timeFrom, int timeTo)
+        public IList<NetworkMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
         {
             using var cmd = new SQLiteCommand(_connection);
-            string stimeFrom = timeFrom.ToString();
-            string stimeTo = timeTo.ToString();
+            string stimeFrom = timeFrom.ToUnixTimeSeconds().ToString();
+            string stimeTo = timeTo.ToUnixTimeSeconds().ToString();
             cmd.CommandText = "SELECT * FROM " + _tablename + " WHERE (time > " + stimeFrom + ") AND (time < " + stimeTo + ")";
             var returnList = new List<NetworkMetric>();
             using (SQLiteDataReader reader = cmd.ExecuteReader())

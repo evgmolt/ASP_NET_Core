@@ -39,8 +39,8 @@ namespace MetricsAgent.Controllers
 
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics(
-            [FromRoute] int fromTime,
-            [FromRoute] int toTime)
+            [FromRoute] DateTimeOffset fromTime,
+            [FromRoute] DateTimeOffset toTime)
         {
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
 
@@ -54,7 +54,7 @@ namespace MetricsAgent.Controllers
             {
                 response.Metrics.Add(new DotNetMetricDto
                 {
-                    Time = metric.Time,
+                    Time = DateTimeOffset.FromUnixTimeSeconds(metric.Time),
                     Value = metric.Value,
                     Id = metric.Id
                 });

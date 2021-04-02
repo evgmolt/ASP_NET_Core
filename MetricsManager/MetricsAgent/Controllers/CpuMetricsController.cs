@@ -42,8 +42,8 @@ namespace MetricsAgent.Controllers
         //а уже внутри репозитори при формирования запроса к БД, где хранится число предложил бы сделать DateTimeOffset.ToUnixDatetime
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics(
-            [FromRoute] int fromTime,
-            [FromRoute] int toTime)
+            [FromRoute] DateTimeOffset fromTime,
+            [FromRoute] DateTimeOffset toTime)
         {
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
 
@@ -57,7 +57,7 @@ namespace MetricsAgent.Controllers
             {
                 response.Metrics.Add(new CpuMetricDto
                 {
-                    Time = metric.Time,
+                    Time = DateTimeOffset.FromUnixTimeSeconds(metric.Time),
                     Value = metric.Value,
                     Id = metric.Id
                 });

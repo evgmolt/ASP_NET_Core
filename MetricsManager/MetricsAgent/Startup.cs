@@ -66,6 +66,13 @@ namespace MetricsAgent
             }
         }
 
+        private string GetDateString(int n)
+        {
+            DateTimeOffset datetime = DateTimeOffset.Parse(n.ToString().PadLeft(2, '0') + "-01-2020");
+            long unixtime = datetime.ToUnixTimeSeconds();
+            return unixtime.ToString();
+        }
+
         private void FillTable(SQLiteConnection connection, string tablename)
         {
             int _numOfRecords = 5;
@@ -74,7 +81,7 @@ namespace MetricsAgent
                 Random rand = new Random();
                 for (int i = 0; i < _numOfRecords; i++)
                 {
-                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + i.ToString() + ")";
+                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + GetDateString(i + 1) + ")";
                     command.ExecuteNonQuery();
                 }
             }
