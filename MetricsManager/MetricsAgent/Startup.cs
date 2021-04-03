@@ -1,3 +1,4 @@
+using AutoMapper;
 using Core;
 using Core.Interfaces;
 using MetricsAgent.DAL.Interfaces;
@@ -38,7 +39,12 @@ namespace MetricsAgent
             services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
             services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
             services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
-            services.AddTransient<INotifier, Notifier1>();
+
+            services.AddTransient<INotifierMediatorService, NotifierMediatorService>();
+
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)

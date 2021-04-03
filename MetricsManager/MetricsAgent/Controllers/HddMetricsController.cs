@@ -1,4 +1,5 @@
-﻿using MetricsAgent.DAL.Interfaces;
+﻿using AutoMapper;
+using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Http;
@@ -17,11 +18,13 @@ namespace MetricsAgent.Controllers
     {
         private IHddMetricsRepository _repository;
         private readonly ILogger<HddMetricsController> _logger;
+        private readonly IMapper _mapper;
 
-        public HddMetricsController(ILogger<HddMetricsController> logger, IHddMetricsRepository repository)
+        public HddMetricsController(ILogger<HddMetricsController> logger, IHddMetricsRepository repository, IMapper mapper)
         {
             this._repository = repository;
-            _logger = logger;
+            this._logger = logger;
+            this._mapper = mapper;
             _logger.LogInformation(1, "NLog встроен в HddMetricsController");
         }
 
@@ -46,15 +49,12 @@ namespace MetricsAgent.Controllers
             };
             foreach (var metric in metrics)
             {
-                response.Metrics.Add(new HddMetricDto
-                {
-                    Time = DateTimeOffset.FromUnixTimeSeconds(metric.Time),
-                    Value = metric.Value,
-                    Id = metric.Id
-                });
-            }
+                response.Metrics.Add(_mapper.Map<HddMetricDto>(metric));
+            };
+            
             _logger.LogInformation($"GetMetrics");
-            return Ok();
+
+            return Ok(response);
         }
     }
 }

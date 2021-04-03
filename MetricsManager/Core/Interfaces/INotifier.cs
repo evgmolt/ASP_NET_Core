@@ -16,7 +16,7 @@ namespace Core.Interfaces
     {
         public bool CanRun()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Notify()

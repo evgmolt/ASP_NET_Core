@@ -15,7 +15,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public HddMetricsRepository()
         {
-            SqlMapper.AddTypeHandler(new TimeSpanHandler());
+            SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.Hdd];
         }
 

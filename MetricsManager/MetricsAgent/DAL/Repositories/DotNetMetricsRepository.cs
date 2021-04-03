@@ -15,7 +15,7 @@ namespace MetricsAgent.DAL.Repositories
 
         public DotNetMetricsRepository()
         {
-            SqlMapper.AddTypeHandler(new TimeSpanHandler());
+            SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.DotNet]; ;
         }
 
