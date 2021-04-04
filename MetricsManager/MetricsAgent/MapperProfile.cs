@@ -35,6 +35,4 @@ namespace MetricsAgent
                 ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time.ToUnixTimeSeconds()));
         }
     }
-
-
 }
