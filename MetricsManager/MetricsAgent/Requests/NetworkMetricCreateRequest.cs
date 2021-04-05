@@ -7,7 +7,7 @@ namespace MetricsAgent.Requests
 {
     public class NetworkMetricCreateRequest
     {
-        public int Time { get; set; }
+        public long Time { get; set; }
         public int Value { get; set; }
     }
 }
