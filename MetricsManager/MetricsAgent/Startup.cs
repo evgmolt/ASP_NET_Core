@@ -34,8 +34,6 @@ namespace MetricsAgent
 
         public IConfiguration Configuration { get; }
 
-        private string _connectionString = @"Data Source=metrics.db;Version=3;";
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -51,6 +49,8 @@ namespace MetricsAgent
             var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
             var mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton(mapper);
+
+            string _connectionString = Configuration.GetValue<string>("ConnectionString");
 
             services.AddFluentMigratorCore()
             .ConfigureRunner(rb => rb.AddSQLite()
