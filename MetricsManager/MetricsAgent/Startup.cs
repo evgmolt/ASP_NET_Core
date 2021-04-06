@@ -62,65 +62,35 @@ namespace MetricsAgent
             services.AddSingleton<IJobFactory, SingletonJobFactory>();
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
+            int getMetricsInterval = Configuration.GetValue<int>("GetMetricsInterval");
+            string cronString = String.Format(Strings.CronString, getMetricsInterval);
+
             services.AddSingleton<CpuMetricJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(CpuMetricJob),
-                cronExpression: "0/5 * * * * ?")); // запускать каждые 5 секунд
+                cronExpression: cronString)); 
 
             services.AddSingleton<DotNetMetricJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(DotNetMetricJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: cronString));
 
             services.AddSingleton<HddMetricJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(HddMetricJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: cronString));
 
             services.AddSingleton<NetworkMetricJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(NetworkMetricJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: cronString));
 
             services.AddSingleton<RamMetricJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(RamMetricJob),
-                cronExpression: "0/5 * * * * ?"));
+                cronExpression: cronString));
 
             services.AddHostedService<QuartzHostedService>();
-        }
-
-        private void PrepareSchema()
-        {
-            using (var connection = new SQLiteConnection(_connectionString))
-            {
-                connection.Open();
-                for (int i = 0; i < Strings.TableNames.Count(); i++)
-                {
-                    FillTable(connection, Strings.TableNames[i]);
-                }
-            }
-        }
-
-        private string GetDateString(int n)
-        {
-            DateTimeOffset datetime = DateTimeOffset.Parse(n.ToString().PadLeft(2, '0') + "-01-2020");
-            long unixtime = datetime.ToUnixTimeSeconds();
-            return unixtime.ToString();
-        }
-
-        private void FillTable(SQLiteConnection connection, string tablename)
-        {
-            int _numOfRecords = 10;
-            using (var command = new SQLiteCommand(connection))
-            {
-                Random rand = new Random();
-                for (int i = 0; i < _numOfRecords; i++)
-                {
-                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + GetDateString(i + 1) + ")";
-                    command.ExecuteNonQuery();
-                }
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -143,7 +113,6 @@ namespace MetricsAgent
             });
 
             migrationRunner.MigrateUp();
-//            PrepareSchema();
         }
     }
 }

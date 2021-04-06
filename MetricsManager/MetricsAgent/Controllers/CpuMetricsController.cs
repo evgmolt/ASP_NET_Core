@@ -5,6 +5,7 @@ using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,15 @@ namespace MetricsAgent.Controllers
         private ICpuMetricsRepository _repository;
         private readonly ILogger<CpuMetricsController> _logger;
         private readonly IMapper _mapper;
+        public IConfiguration _configuration;
 
-        public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository, IMapper mapper)
+        public CpuMetricsController(
+            ILogger<CpuMetricsController> logger, 
+            ICpuMetricsRepository repository, 
+            IMapper mapper,
+            IConfiguration configuration)
         {
+            this._configuration = configuration;
             this._repository = repository;
             this._logger = logger;
             this._mapper = mapper;
@@ -38,25 +45,6 @@ namespace MetricsAgent.Controllers
                 Value = request.Value
             });
             return Ok();
-        }
-
-        [HttpGet()]
-        public IActionResult GetAll()
-        {
-            _logger.LogInformation($"GetAll");
-
-            var metrics = _repository.GetAll();
-            var response = new CpuMetricsResponse()
-            {
-                Metrics = new List<CpuMetricDto>()
-            };
-
-            foreach (var metric in metrics)
-            {
-                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
-            }
-
-            return Ok(response);
         }
 
         [HttpGet("from/{fromTime}/to/{toTime}")]
@@ -79,6 +67,30 @@ namespace MetricsAgent.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("getlast")]
+        public IActionResult GetLastMetric()
+        {
+            _logger.LogInformation($"GetLastMetric");
+
+            int metricsInterval = _configuration.GetValue<int>("GetMetricsInterval");
+            metricsInterval = metricsInterval + metricsInterval / 2;
+            TimeSpan timeShift = new TimeSpan(0, 0, metricsInterval);
+            DateTimeOffset timeNow = DateTimeOffset.Now;
+            var metrics = _repository.GetByTimePeriod(timeNow - timeShift, timeNow);
+            var response = new CpuMetricsResponse()
+            {
+                Metrics = new List<CpuMetricDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+            }
+
+            return Ok(response);
+        }
+
 
         [HttpGet("from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentile(
