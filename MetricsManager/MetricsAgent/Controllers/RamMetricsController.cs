@@ -20,7 +20,7 @@ namespace MetricsAgent.Controllers
         private IRamMetricsRepository _repository;
         private readonly ILogger<RamMetricsController> _logger;
         private readonly IMapper _mapper;
-        public IConfiguration _configuration;
+        private IConfiguration _configuration;
 
         public RamMetricsController(
             ILogger<RamMetricsController> logger, 

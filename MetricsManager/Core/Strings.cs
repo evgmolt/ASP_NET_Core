@@ -15,8 +15,6 @@ namespace Core
             "networkmetrics",
             "rammetrics"
         };
-        public const string ConnectionString = "Data Source=metrics.db;Version=3;Pooling=True;Max Pool Size=100;";
-        public static string DbFileName = "metrics.db";
         public static string CronString = "0/{0} * * * * ?";
     }
 }

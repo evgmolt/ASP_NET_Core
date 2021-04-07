@@ -21,7 +21,7 @@ namespace MetricsAgent.Controllers
         private ICpuMetricsRepository _repository;
         private readonly ILogger<CpuMetricsController> _logger;
         private readonly IMapper _mapper;
-        public IConfiguration _configuration;
+        private IConfiguration _configuration;
 
         public CpuMetricsController(
             ILogger<CpuMetricsController> logger, 

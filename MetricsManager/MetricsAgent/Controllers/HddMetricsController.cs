@@ -21,7 +21,7 @@ namespace MetricsAgent.Controllers
         private IHddMetricsRepository _repository;
         private readonly ILogger<HddMetricsController> _logger;
         private readonly IMapper _mapper;
-        public IConfiguration _configuration;
+        private IConfiguration _configuration;
 
         public HddMetricsController(
             ILogger<HddMetricsController> logger, 
