@@ -108,5 +108,10 @@ namespace MetricsAgent.DAL.Repositories
                 }
             }
         }
+
+        public IList<NetworkMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            return null;
+        }
     }
 }

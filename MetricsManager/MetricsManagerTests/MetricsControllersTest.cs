@@ -1,5 +1,7 @@
 using MetricsManager.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using Xunit;
 
@@ -8,10 +10,14 @@ namespace MetricsManagerTests
     public class CpuMetricsControllersTest
     {
         private CpuMetricsController controller;
+        private Mock<ILogger<CpuMetricsController>> loggerMock;
+
         public CpuMetricsControllersTest()
         {
-            controller = new CpuMetricsController();
+            loggerMock = new Mock<ILogger<CpuMetricsController>>();
+            controller = new CpuMetricsController(loggerMock.Object);
         }
+
         [Fact]
         public void GetMetricsFromAgent_ReturnsOk()
         {
@@ -29,10 +35,14 @@ namespace MetricsManagerTests
     public class DotNetMetricsControllerTest
     {
         private DotNetMetricsController controller;
+        private Mock<ILogger<DotNetMetricsController>> loggerMock;
+
         public DotNetMetricsControllerTest()
         {
-            controller = new DotNetMetricsController();
+            loggerMock = new Mock<ILogger<DotNetMetricsController>>();
+            controller = new DotNetMetricsController(loggerMock.Object);
         }
+
         [Fact]
         public void GetMetricsFromAgent_ReturnsOk()
         {
@@ -50,10 +60,14 @@ namespace MetricsManagerTests
     public class HddMetricsControllerTest
     {
         private HddMetricsController controller;
+        private Mock<ILogger<HddMetricsController>> loggerMock;
+
         public HddMetricsControllerTest()
         {
-            controller = new HddMetricsController();
+            loggerMock = new Mock<ILogger<HddMetricsController>>();
+            controller = new HddMetricsController(loggerMock.Object);
         }
+
         [Fact]
         public void GetMetricsFromAgent_ReturnsOk()
         {
@@ -71,10 +85,14 @@ namespace MetricsManagerTests
     public class NetworkMetricsControllerTest
     {
         private NetworkMetricsController controller;
+        private Mock<ILogger<NetworkMetricsController>> loggerMock;
+
         public NetworkMetricsControllerTest()
         {
-            controller = new NetworkMetricsController();
+            loggerMock = new Mock<ILogger<NetworkMetricsController>>();
+            controller = new NetworkMetricsController(loggerMock.Object);
         }
+
         [Fact]
         public void GetMetricsFromAgent_ReturnsOk()
         {
@@ -92,10 +110,14 @@ namespace MetricsManagerTests
     public class RamMetricsControllerTest
     {
         private RamMetricsController controller;
+        private Mock<ILogger<RamMetricsController>> loggerMock;
+
         public RamMetricsControllerTest()
         {
-            controller = new RamMetricsController();
+            loggerMock = new Mock<ILogger<RamMetricsController>>();
+            controller = new RamMetricsController(loggerMock.Object);
         }
+
         [Fact]
         public void GetMetricsFromAgent_ReturnsOk()
         {
