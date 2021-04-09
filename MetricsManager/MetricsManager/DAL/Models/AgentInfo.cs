@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace MetricsManager.Controllers
+namespace MetricsManager.DAL.Models
 {
     public class AgentInfo
     {
-        public int AgentId { get; set; }
-
         public Uri AgentAddress { get; set; }
+
+        public bool Enabled { get; set; }
     }
 }

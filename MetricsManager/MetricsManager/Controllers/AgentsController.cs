@@ -1,5 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
+using MetricsManager.DAL.Repositories;
+using MetricsManager.Responses;
+using MetricsManager.Responses.DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +15,36 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/agents")]
     [ApiController]
     public class AgentsController : ControllerBase
     {
-        [HttpPost("register")]
-        public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
+        private IAgentsRepository _repository;
+        private readonly ILogger<AgentsController> _logger;
+        private readonly IMapper _mapper;
+        private IConfiguration _configuration;
+
+        public AgentsController(
+            ILogger<AgentsController> logger,
+            IAgentsRepository repository,
+            IMapper mapper,
+            IConfiguration configuration)
         {
+            this._configuration = configuration;
+            this._repository = repository;
+            this._logger = logger;
+            this._mapper = mapper;
+            _logger.LogDebug(1, "NLog встроен в AgentsController");
+
+        }
+
+        [HttpPost("register/address/{agentAddress}")]
+        public IActionResult RegisterAgent([FromRoute] string agentAddress)
+        {
+            _repository.RegisterAgent(new AgentInfo() { AgentAddress = new Uri(agentAddress), Enabled = true } );
             return Ok();
         }
+
         [HttpPut("enable/{agentId}")]
         public IActionResult EnableAgentById([FromRoute] int agentId)
         {
@@ -30,7 +59,18 @@ namespace MetricsManager.Controllers
         [HttpGet("getagents")]
         public IActionResult GetAgentsList()
         {
-            return Ok();
+            var metrics = _repository.GetAgentsList();
+            var response = new AgentResponse()
+            {
+                Metrics = new List<AgentDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<AgentDto>(metric));
+            }
+
+            return Ok(response);
         }
     }
 }

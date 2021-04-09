@@ -15,6 +15,9 @@ namespace Core
             "networkmetrics",
             "rammetrics"
         };
+
+        public static string AgentsTableName = "agents";
+
         public static string CronString = "0/{0} * * * * ?";
     }
 }

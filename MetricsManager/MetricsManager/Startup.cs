@@ -14,6 +14,11 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using DAL;
 using MetricsManager.DAL.Interfaces;
+using AutoMapper;
+using MetricsManager.DAL.Repositories;
+using MetricsAgent.DAL.Repositories;
+using FluentMigrator.Runner;
+using MetricsManager.DAL.Models;
 
 namespace MetricsManager
 {
@@ -30,35 +35,30 @@ namespace MetricsManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            ConfigureSqlLiteConnection(services);
-            services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
-        }
 
-        private void ConfigureSqlLiteConnection(IServiceCollection services)
-        {
-            string connectionString = "Data Source=:memory:";
-            var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            PrepareSchema(connection);
-            services.AddSingleton(connection);
-        }
+            services.AddSingleton<IAgentsRepository, IAgentsRepository>();
+            services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
+            services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
+            services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
+            services.AddSingleton<INetworkMetricsRepository, NetworkMetricsRepository>();
+            services.AddSingleton<IRamMetricsRepository, RamMetricsRepository>();
 
-        private void PrepareSchema(SQLiteConnection connection)
-        {
-            using (var command = new SQLiteCommand(connection))
-            {
-                // задаем новый текст команды для выполнения
-                // удаляем таблицу с метриками если она существует в базе данных
-                command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
-                // отправляем запрос в базу данных
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, agentid INT, value INT, time INT)";
-                command.ExecuteNonQuery();
-            }
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
+
+            string _connectionString = Configuration.GetValue<string>("ConnectionString");
+
+            services.AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb.AddSQLite()
+            .WithGlobalConnectionString(_connectionString)
+            .ScanIn(typeof(Startup).Assembly).For.Migrations()
+            ).AddLogging(lb => lb
+            .AddFluentMigratorConsole());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
             if (env.IsDevelopment())
             {
@@ -75,6 +75,8 @@ namespace MetricsManager
             {
                 endpoints.MapControllers();
             });
+
+            migrationRunner.MigrateUp();
         }
     }
 }
