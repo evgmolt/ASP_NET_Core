@@ -7,7 +7,6 @@ namespace MetricsManager.Responses.DTO
 {
     public class AgentInfoDto
     {
-        public int Id { get; set; }
         public string AgentAddress { get; set; }
         public bool Enabled { get; set; }
     }
