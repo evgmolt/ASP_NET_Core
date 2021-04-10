@@ -14,8 +14,8 @@ namespace MetricsManager.DAL.Migrations
         {
             Create.Table(Strings.AgentsTableName)
                     .WithColumn("Id").AsInt64().PrimaryKey().Identity()
-                    .WithColumn("AgentID").AsInt32() 
-                    .WithColumn("AgentAddress").AsString();
+                    .WithColumn("AgentAddress").AsString() 
+                    .WithColumn("Enabled").AsBoolean();
 
             for (int i = 0; i < Strings.TableNames.Count(); i++)
             {

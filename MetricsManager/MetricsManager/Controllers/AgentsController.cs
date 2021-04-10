@@ -41,7 +41,8 @@ namespace MetricsManager.Controllers
         [HttpPost("register/address/{agentAddress}")]
         public IActionResult RegisterAgent([FromRoute] string agentAddress)
         {
-            _repository.RegisterAgent(new AgentInfo() { AgentAddress = new Uri(agentAddress), Enabled = true } );
+            string http = "http://";
+            _repository.RegisterAgent(new AgentInfo() { AgentAddress = http + agentAddress, Enabled = true } );
             return Ok();
         }
 
@@ -62,12 +63,12 @@ namespace MetricsManager.Controllers
             var metrics = _repository.GetAgentsList();
             var response = new AgentResponse()
             {
-                Metrics = new List<AgentDto>()
+                Metrics = new List<AgentInfoDto>()
             };
 
             foreach (var metric in metrics)
             {
-                response.Metrics.Add(_mapper.Map<AgentDto>(metric));
+                response.Metrics.Add(_mapper.Map<AgentInfoDto>(metric));
             }
 
             return Ok(response);

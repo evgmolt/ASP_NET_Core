@@ -8,6 +8,6 @@ namespace MetricsManager.Responses
 {
     public class AgentResponse
     {
-        public List<AgentDto> Metrics { get; set; }
+        public List<AgentInfoDto> Metrics { get; set; }
     }
 }

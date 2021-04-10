@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Responses.DTO
 {
-    public class AgentDto
+    public class AgentInfoDto
     {
         public int Id { get; set; }
         public string AgentAddress { get; set; }

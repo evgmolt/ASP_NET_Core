@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MetricsManager.DAL.Models;
 using MetricsManager.Responses;
+using MetricsManager.Responses.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace MetricsManager
     {
         public MapperProfile()
         {
+            CreateMap<AgentInfo, AgentInfoDto>();
+
             CreateMap<CpuMetric, CpuMetricDto>().
                 ForMember(dest => dest.Time, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.Time)));
             CreateMap<DotNetMetric, DotNetMetricDto>().
@@ -22,6 +25,8 @@ namespace MetricsManager
                 ForMember(dest => dest.Time, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.Time)));
             CreateMap<RamMetric, RamMetricDto>().
                 ForMember(dest => dest.Time, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.Time)));
+
+            CreateMap<AgentInfoDto, AgentInfo>();
 
             CreateMap<CpuMetricDto, CpuMetric>().
                 ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time.ToUnixTimeSeconds()));
