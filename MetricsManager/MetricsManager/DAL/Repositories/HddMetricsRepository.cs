@@ -11,7 +11,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.DAL.Repositories
+namespace MetricsManager.DAL.Repositories
 {
     public class HddMetricsRepository : IHddMetricsRepository
     {

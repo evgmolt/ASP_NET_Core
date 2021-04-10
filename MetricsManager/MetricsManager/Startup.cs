@@ -16,9 +16,14 @@ using DAL;
 using MetricsManager.DAL.Interfaces;
 using AutoMapper;
 using MetricsManager.DAL.Repositories;
-using MetricsAgent.DAL.Repositories;
 using FluentMigrator.Runner;
 using MetricsManager.DAL.Models;
+using MetricsManager.Jobs.MetricJobs;
+using MetricsManager.Jobs;
+using Quartz.Spi;
+using Quartz;
+using Core;
+using Quartz.Impl;
 
 namespace MetricsManager
 {
@@ -55,6 +60,39 @@ namespace MetricsManager
             .ScanIn(typeof(Startup).Assembly).For.Migrations()
             ).AddLogging(lb => lb
             .AddFluentMigratorConsole());
+
+            services.AddSingleton<IJobFactory, SingletonJobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+
+            int getMetricsInterval = Configuration.GetValue<int>("GetMetricsInterval");
+            string cronString = String.Format(Strings.CronString, getMetricsInterval);
+
+            services.AddSingleton<CpuMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(CpuMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<DotNetMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(DotNetMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<HddMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(HddMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<NetworkMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(NetworkMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<RamMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(RamMetricJob),
+                cronExpression: cronString));
+
+            services.AddHostedService<QuartzHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
