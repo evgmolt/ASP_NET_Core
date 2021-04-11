@@ -95,6 +95,14 @@ namespace MetricsManager.DAL.Repositories
                 new { agentid = agentid, timefrom = timefrom, timeto = timeto });
             }
         }
+
+        public DotNetMetric GetLast()
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return connection.QuerySingle<DotNetMetric>("SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename);
+            }
+        }
     }
 
 }

@@ -100,5 +100,13 @@ namespace DAL
         {
             return null;
         }
+
+        public CpuMetric GetLast()
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return connection.QuerySingle<CpuMetric>("SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename);
+            }
+        }
     }
 }

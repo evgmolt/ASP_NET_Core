@@ -15,6 +15,7 @@ using Quartz.Spi;
 using Quartz;
 using Core;
 using Quartz.Impl;
+using MetricsManager.Client;
 
 namespace MetricsManager
 {
@@ -86,6 +87,7 @@ namespace MetricsManager
             services.AddHostedService<QuartzHostedService>();
 
             services.AddHttpClient();
+            services.AddHttpClient<IMetricsAgentClient, MetricsAgentClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
