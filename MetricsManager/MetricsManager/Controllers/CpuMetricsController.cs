@@ -56,64 +56,10 @@ namespace MetricsManager.Controllers
             {
                 AgentAddress = "http://localhost:5004",
                 FromTime = fromTime,
-                ToTime = DateTimeOffset.Now
+                ToTime = toTime
             });
             return Ok(metrics);
         }
-        //            [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
-        //        public IActionResult GetMetricsFromAgent(
-        //            [FromRoute] int agentId, 
-        //            [FromRoute] DateTimeOffset fromTime, 
-        //            [FromRoute] DateTimeOffset toTime)
-        //        {
-        //            string stringFromTime = fromTime.ToString("O");
-        //            string stringToTime = toTime.ToString("O");
-        //            string requestString = String.Format("http://localhost:5004/api/cpumetrics/from/{0}/to/{1}", stringFromTime, stringToTime);
-        //            var request = new HttpRequestMessage(HttpMethod.Get, requestString);
-        //            //$"http://localhost:5004/api/cpumetrics/from/2021-04-10/to/2021-04-13");
-        //            //$"http://localhost:5004/api/cpumetrics/from/{fromTime}/to/{toTime}");
-
-        //            var client = _httpClientFactory.CreateClient();
-        //            HttpResponseMessage response = client.SendAsync(request).Result;
-        //            var jsonSerializerOptions = new JsonSerializerOptions();
-        //            jsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                using var responseStream = response.Content.ReadAsStreamAsync().Result;
-        //                var l = responseStream.Length;
-        //                using var streamReader = new StreamReader(responseStream);
-        //                var content = streamReader.ReadToEnd();
-        //                var metricsResponse = JsonConvert.DeserializeObject(content);
-        ////                var metricsResponse = JsonSerializer.DeserializeAsync<CpuMetricsResponse>(responseStream).Result;
-        //            }
-        //            else
-        //            {
-        //                return BadRequest();
-        //            }
-        //            return Ok();
-        //        }
-
-        //[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
-        //public IActionResult GetMetricsFromAgent(
-        //    [FromRoute] int agentId, 
-        //    [FromRoute] DateTimeOffset fromTime, 
-        //    [FromRoute] DateTimeOffset toTime)
-        //{
-        //    _logger.LogInformation($"GetMetricsFromAgent:{agentId} from:{fromTime} to:{toTime}");
-
-        //    var metrics = _repository.GetByTimePeriod(agentId, fromTime, toTime);
-        //    var response = new CpuMetricsResponse()
-        //    {
-        //        Metrics = new List<CpuMetricDto>()
-        //    };
-
-        //    foreach (var metric in metrics)
-        //    {
-        //        response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
-        //    }
-
-        //    return Ok(response);
-        //}
 
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentileFromAgent(

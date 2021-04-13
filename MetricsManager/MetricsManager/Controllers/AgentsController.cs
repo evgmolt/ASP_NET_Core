@@ -49,11 +49,13 @@ namespace MetricsManager.Controllers
         [HttpPut("enable/{agentId}")]
         public IActionResult EnableAgentById([FromRoute] int agentId)
         {
+            _repository.EnableAgentById(agentId);
             return Ok();
         }
         [HttpPut("disable/{agentId}")]
         public IActionResult DisableAgentById([FromRoute] int agentId)
         {
+            _repository.DisableAgentById(agentId);
             return Ok();
         }
 

@@ -35,12 +35,22 @@ namespace MetricsManager.DAL.Repositories
             }
         }
 
-        public void EnableAgentById(int agentId)
+        public void EnableAgentById(int id)
         {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("UPDATE " + Strings.AgentsTableName + " SET enabled = @enabled WHERE id = @id",
+                new { id = id, enabled = true });
+            }
         }
-        
-        public void DisableAgentById(int agentId)
+
+        public void DisableAgentById(int id)
         {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("UPDATE " + Strings.AgentsTableName + " SET enabled = @enabled WHERE id = @id",
+                new { id = id, enabled = false });
+            }
         }
 
         public AgentInfo GetAgentById(int id)
@@ -50,7 +60,6 @@ namespace MetricsManager.DAL.Repositories
                 return connection.QuerySingle<AgentInfo>("SELECT Id, AgentAddress, Enabled FROM " + Strings.AgentsTableName + " WHERE id = @id",
                 new { id = id });
             }
-
         }
 
         public IList<AgentInfo> GetAgentsList()
@@ -59,7 +68,6 @@ namespace MetricsManager.DAL.Repositories
             {
                 return connection.Query<AgentInfo>("SELECT Id, AgentAddress, Enabled FROM " + Strings.AgentsTableName).ToList();
             }
-
         }
     }
 }

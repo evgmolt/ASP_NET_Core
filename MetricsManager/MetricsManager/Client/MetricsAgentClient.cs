@@ -51,59 +51,32 @@ namespace MetricsManager.Client
         }
 
         public AllCpuMetricsApiResponse GetCpuMetrics(GetAllCpuMetricsApiRequest request)
-        {
-//            var fromParameter = request.FromTime.ToString("O");
-//            var toParameter = request.ToTime.ToString("O");
-//            var httpRequest = new HttpRequestMessage(
-//                HttpMethod.Get,
-//                String.Format(
-//                    "{0}/api/{1}/from/{2}/to/{3}",
-//                    request.AgentAddress,
-//                    Strings.TableNames[(int)Enums.MetricsNames.Cpu],
-//                    fromParameter, 
-//                    toParameter));
-////            try
-//            {
-//                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
-
-//                using var responseStream = response.Content.ReadAsStreamAsync().Result;
-//                using var streamReader = new StreamReader(responseStream);
-//                var content = streamReader.ReadToEnd();
-//                return JsonConvert.DeserializeObject<AllCpuMetricsApiResponse>(content);
-//                //using var responseStream = response.Content.ReadAsStreamAsync().Result;
-//                //return JsonSerializer.DeserializeAsync<AllCpuMetricsApiResponse>(responseStream).Result;
-//            }
-////            catch (Exception ex)
-//            {
-//                //                _logger.Error(ex.Message);
-//                return null;
-//            }
-            
+        {            
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
             return JsonConvert.DeserializeObject<AllCpuMetricsApiResponse>(content);
         }
 
         public AllDotNetMetricsApiResponse GetDotNetMetrics(GetAllDotNetMetricsApiRequest request)
         {
-            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
+            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.DotNet]);
             return JsonConvert.DeserializeObject<AllDotNetMetricsApiResponse>(content);
         }
 
         public AllHddMetricsApiResponse GetHddMetrics(GetAllHddMetricsApiRequest request)
         {
-            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
+            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Hdd]);
             return JsonConvert.DeserializeObject<AllHddMetricsApiResponse>(content);
         }
 
         public AllNetworkMetricsApiResponse GetNetworkMetrics(NetworkMetrisApiRequest request)
         {
-            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
+            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Network]);
             return JsonConvert.DeserializeObject<AllNetworkMetricsApiResponse>(content);
         }
 
         public AllRamMetricsApiResponse GetRamMetrics(GetAllRamMetricsApiRequest request)
         {
-            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
+            string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Ram]);
             return JsonConvert.DeserializeObject<AllRamMetricsApiResponse>(content);
         }
     }
