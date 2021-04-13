@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using Enums;
+using MetricsManager.Client;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -24,14 +27,17 @@ namespace MetricsManager.Controllers
         private readonly IMapper _mapper;
         private IConfiguration _configuration;
         private IHttpClientFactory _httpClientFactory;
+        private IMetricsAgentClient _metricsAgentClient;
 
         public CpuMetricsController(
             ILogger<CpuMetricsController> logger,
             ICpuMetricsRepository repository,
             IMapper mapper,
             IConfiguration configuration,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            IMetricsAgentClient metricsAgentClient)
         {
+            this._metricsAgentClient = metricsAgentClient;
             this._httpClientFactory = httpClientFactory;
             this._configuration = configuration;
             this._repository = repository;
@@ -42,27 +48,50 @@ namespace MetricsManager.Controllers
 
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetricsFromAgent(
-            [FromRoute] int agentId, 
-            [FromRoute] DateTimeOffset fromTime, 
+            [FromRoute] int agentId,
+            [FromRoute] DateTimeOffset fromTime,
             [FromRoute] DateTimeOffset toTime)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get,
-            "http://localhost:5002/api/cpumetrics/from/{fromTime}/to/{toTime}");
-//            request.Headers.Add("Accept", "application/vnd.github.v3+json");
-            var client = _httpClientFactory.CreateClient();
-            HttpResponseMessage response = client.SendAsync(request).Result;
-            if (response.IsSuccessStatusCode)
+            var metrics = _metricsAgentClient.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
             {
-                using var responseStream = response.Content.ReadAsStreamAsync().Result;
-                var metricsResponse = JsonSerializer.DeserializeAsync
-                    <CpuMetricsResponse>(responseStream).Result;
-            }
-            else
-            {
-                return BadRequest();
-            }
-            return Ok();
+                AgentAddress = "http://localhost:5004",
+                FromTime = fromTime,
+                ToTime = DateTimeOffset.Now
+            });
+            return Ok(metrics);
         }
+        //            [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
+        //        public IActionResult GetMetricsFromAgent(
+        //            [FromRoute] int agentId, 
+        //            [FromRoute] DateTimeOffset fromTime, 
+        //            [FromRoute] DateTimeOffset toTime)
+        //        {
+        //            string stringFromTime = fromTime.ToString("O");
+        //            string stringToTime = toTime.ToString("O");
+        //            string requestString = String.Format("http://localhost:5004/api/cpumetrics/from/{0}/to/{1}", stringFromTime, stringToTime);
+        //            var request = new HttpRequestMessage(HttpMethod.Get, requestString);
+        //            //$"http://localhost:5004/api/cpumetrics/from/2021-04-10/to/2021-04-13");
+        //            //$"http://localhost:5004/api/cpumetrics/from/{fromTime}/to/{toTime}");
+
+        //            var client = _httpClientFactory.CreateClient();
+        //            HttpResponseMessage response = client.SendAsync(request).Result;
+        //            var jsonSerializerOptions = new JsonSerializerOptions();
+        //            jsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                using var responseStream = response.Content.ReadAsStreamAsync().Result;
+        //                var l = responseStream.Length;
+        //                using var streamReader = new StreamReader(responseStream);
+        //                var content = streamReader.ReadToEnd();
+        //                var metricsResponse = JsonConvert.DeserializeObject(content);
+        ////                var metricsResponse = JsonSerializer.DeserializeAsync<CpuMetricsResponse>(responseStream).Result;
+        //            }
+        //            else
+        //            {
+        //                return BadRequest();
+        //            }
+        //            return Ok();
+        //        }
 
         //[HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         //public IActionResult GetMetricsFromAgent(

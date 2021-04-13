@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/ram")]
+    [Route("api/rammetrics")]
     [ApiController]
     public class RamMetricsController : ControllerBase
     {

@@ -5,6 +5,7 @@ using FluentMigrator.Runner;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.DAL.Repositories;
 using MetricsAgent.Jobs;
+using MetricsManager.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -91,6 +92,8 @@ namespace MetricsAgent
                 cronExpression: cronString));
 
             services.AddHostedService<QuartzHostedService>();
+//            services.AddHttpClient();
+            services.AddHttpClient<IMetricsAgentClient, MetricsAgentClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

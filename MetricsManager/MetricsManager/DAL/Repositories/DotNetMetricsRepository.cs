@@ -96,11 +96,13 @@ namespace MetricsManager.DAL.Repositories
             }
         }
 
-        public DotNetMetric GetLast()
+        public DotNetMetric GetLast(int agentid)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.QuerySingle<DotNetMetric>("SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename);
+                return connection.QuerySingle<DotNetMetric>(
+                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
+                new { agentid = agentid });
             }
         }
     }

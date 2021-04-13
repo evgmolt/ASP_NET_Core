@@ -7,8 +7,8 @@ namespace MetricsManager.Responses
 {
     public class CpuMetricDto
     {
-        public int Id { get; set; }
-        public int AgentId { get; set; }
+        public int id { get; set; }
+        public int agentId { get; set; }
         public int Value { get; set; }
         public DateTimeOffset Time { get; set; }
     }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/cpu")]
+    [Route("api/cpumetrics")]
     [ApiController]
     public class CpuMetricsController : ControllerBase
     {

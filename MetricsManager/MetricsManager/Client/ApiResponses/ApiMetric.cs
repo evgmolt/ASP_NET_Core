@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Client.ApiResponses
 {
-    public class ApiResponse
+    public class ApiMetric
     {
-        public List<ApiMetric> Metrics;
+        public int AgentId { get; set; }
+        public int Value { get; set; }
+        public DateTimeOffset Time { get; set; }
     }
 }

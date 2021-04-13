@@ -1,5 +1,6 @@
 ﻿using MetricsManager.Client;
 using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using MetricsManager.DAL.Repositories;
 using MetricsManager.Responses;
 using MetricsManager.Responses.DTO;
@@ -26,21 +27,24 @@ namespace MetricsManager.Jobs.MetricJobs
 
         public Task Execute(IJobExecutionContext context)
         {
-            var metrics = _agentsRepository.GetAgentsList();
-            var response = new AgentResponse()
-            {
-                Metrics = new List<AgentInfoDto>()
-            };
-            _repository.
-            foreach (AgentInfoDto agentinfo in response.Metrics)
-            {
-                AllCpuMetricsApiResponse agentresponse = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
-                { 
-                    AgentAddress = agentinfo.AgentAddress, 
-                    FromTime = 0,
-                    ToTime = DateTimeOffset.Now
-                });
-            }
+            //var agents = _agentsRepository.GetAgentsList();
+            //for (int i = 0; i < agents.Count(); i++)
+            //{
+            //    CpuMetric lastmetric = _repository.GetLast(i);
+            //    long fromtimesec = lastmetric?.Time ?? 0;
+            //    DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
+
+            //    AllCpuMetricsApiResponse agentresponse = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
+            //    {
+            //        AgentAddress = agents[i].AgentAddress,
+            //        FromTime = fromtime,
+            //        ToTime = DateTimeOffset.Now
+            //    });
+            //    if (agentresponse != null)
+            //    {
+            //        lastmetric = null;
+            //    }
+            //}
             return Task.CompletedTask;
         }
     }

@@ -9,7 +9,7 @@ namespace MetricsManager.DAL.Interfaces
 
         IList<T> GetByTimePeriod(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo);
 
-        T GetLast();
+        T GetLast(int id);
 
         T GetById(int id);
 
