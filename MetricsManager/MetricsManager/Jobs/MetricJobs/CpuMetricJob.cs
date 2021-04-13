@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
+ //   [DisallowConcurrentExecution]
     public class CpuMetricJob : IJob
     {
         private ICpuMetricsRepository _repository;
@@ -27,24 +28,31 @@ namespace MetricsManager.Jobs.MetricJobs
 
         public Task Execute(IJobExecutionContext context)
         {
-            //var agents = _agentsRepository.GetAgentsList();
-            //for (int i = 0; i < agents.Count(); i++)
-            //{
-            //    CpuMetric lastmetric = _repository.GetLast(i);
-            //    long fromtimesec = lastmetric?.Time ?? 0;
-            //    DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
-
-            //    AllCpuMetricsApiResponse agentresponse = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
-            //    {
-            //        AgentAddress = agents[i].AgentAddress,
-            //        FromTime = fromtime,
-            //        ToTime = DateTimeOffset.Now
-            //    });
-            //    if (agentresponse != null)
-            //    {
-            //        lastmetric = null;
-            //    }
-            //}
+            var agents = _agentsRepository.GetAgentsList();
+            for (int i = 0; i < agents.Count(); i++)
+            {
+                if (agents[i].Enabled)
+                {
+                    CpuMetric lastmetric = _repository.GetLast(i);
+                    long fromtimesec = lastmetric?.Time ?? 0;
+                    DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
+                    var metrics = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
+                    {
+                        AgentAddress = agents[i].AgentAddress,
+                        FromTime = fromtime,
+                        ToTime = DateTimeOffset.Now
+                    });
+                    foreach (var metric in metrics.Metrics)
+                    {
+                        _repository.Create(new CpuMetric()
+                        {
+                            AgentId = metric.AgentId,
+                            Time = metric.Time.ToUnixTimeSeconds(),
+                            Value = metric.Value
+                        });
+                    }
+                }
+            }
             return Task.CompletedTask;
         }
     }

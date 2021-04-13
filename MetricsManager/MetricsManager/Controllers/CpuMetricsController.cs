@@ -52,24 +52,53 @@ namespace MetricsManager.Controllers
             [FromRoute] DateTimeOffset fromTime,
             [FromRoute] DateTimeOffset toTime)
         {
-            var metrics = _metricsAgentClient.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
+            //var metrics = _metricsAgentClient.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
+            //{
+            //    AgentAddress = "http://localhost:5004",
+            //    FromTime = fromTime,
+            //    ToTime = toTime
+            //});
+
+            var metrics = _repository.GetByTimePeriod(agentId, fromTime, toTime);
+            var response = new CpuMetricsResponse()
             {
-                AgentAddress = "http://localhost:5004",
-                FromTime = fromTime,
-                ToTime = toTime
-            });
+                Metrics = new List<CpuMetricDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+            }
+
             return Ok(metrics);
         }
 
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentileFromAgent(
             [FromRoute] int agentId,
-            [FromRoute] TimeSpan fromTime, 
-            [FromRoute] TimeSpan toTime,
-            [FromRoute] Percentile percentile)
+            [FromRoute] DateTimeOffset fromTime,
+            [FromRoute] DateTimeOffset toTime,
+            [FromRoute] int percentile)
         {
-            _logger.LogInformation($"GetMetricsByPercentileFromAgent:{agentId} from:{fromTime} to:{toTime} percentiles:{percentile}");
-            return Ok();
+            _logger.LogInformation($"GetMetricsByPercentileFromAgent:{agentId} from:{fromTime} to:{toTime} int:{percentile}");
+
+            var metrics = _repository.GetByTimePeriodSorted(agentId, fromTime, toTime);
+            var response = new CpuMetricsResponse()
+            {
+                Metrics = new List<CpuMetricDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+            }
+
+            int[] values = new int[response.Metrics.Count()];
+            for (int i = 0; i < response.Metrics.Count(); i++)
+            {
+                values[i] = response.Metrics[i].Value;
+            }
+            return Ok(PercentileCounter.GetPercentile(values, percentile));
         }
 
         [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
@@ -85,7 +114,7 @@ namespace MetricsManager.Controllers
         public IActionResult GetMetricsByPercentileFromAllCluster(
             [FromRoute] TimeSpan fromTime, 
             [FromRoute] TimeSpan toTime,
-            [FromRoute] Percentile percentile)
+            [FromRoute] int percentile)
         {
             _logger.LogInformation($"GetMetricsByPercentileFromAllCluster from:{fromTime} to:{toTime} percentiles:{percentile}");
             return Ok();

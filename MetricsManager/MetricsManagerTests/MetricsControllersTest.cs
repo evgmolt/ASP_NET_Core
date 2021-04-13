@@ -1,8 +1,15 @@
+using AutoMapper;
+using MetricsManager.Client;
 using MetricsManager.Controllers;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using Xunit;
 
 namespace MetricsManagerTests
@@ -11,16 +18,33 @@ namespace MetricsManagerTests
     {
         private CpuMetricsController controller;
         private Mock<ILogger<CpuMetricsController>> loggerMock;
+        private Mock<ICpuMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
+        private Mock<IConfiguration> configurationMock;
+        private Mock<IHttpClientFactory> httpClientFactoryMock;
+        private Mock<IMetricsAgentClient> metricsAgentClientMock;
 
         public CpuMetricsControllersTest()
         {
             loggerMock = new Mock<ILogger<CpuMetricsController>>();
-            controller = new CpuMetricsController(loggerMock.Object);
+            repositoryMock = new Mock<ICpuMetricsRepository>();
+            mapperMock = new Mock<IMapper>();
+            configurationMock = new Mock<IConfiguration>();
+            httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            controller = new CpuMetricsController(
+                loggerMock.Object, 
+                repositoryMock.Object, 
+                mapperMock.Object, 
+                configurationMock.Object,
+                httpClientFactoryMock.Object,
+                metricsAgentClientMock.Object);
         }
 
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetCpuMetricsFromAgent_ReturnsOk()
         {
+            repositoryMock.Setup(repository => repository.GetByTimePeriodSorted(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns(new List<CpuMetric>());
             //Arrange
             var agentId = 1;
             var fromTime = TimeSpan.FromSeconds(0);

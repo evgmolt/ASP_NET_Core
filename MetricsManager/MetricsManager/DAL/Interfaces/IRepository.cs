@@ -9,6 +9,8 @@ namespace MetricsManager.DAL.Interfaces
 
         IList<T> GetByTimePeriod(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo);
 
+        IList<T> GetByTimePeriodSorted(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo);
+
         T GetLast(int id);
 
         T GetById(int id);

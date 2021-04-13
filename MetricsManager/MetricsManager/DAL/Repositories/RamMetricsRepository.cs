@@ -24,7 +24,7 @@ namespace MetricsManager.DAL.Repositories
             _configuration = configuration;
             _connectionString = _configuration.GetValue<string>("ConnectionString");
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
-            _tablename = Strings.TableNames[(int)Enums.MetricsNames.Cpu];
+            _tablename = Strings.TableNames[(int)Enums.MetricsNames.Ram];
         }
 
         public void Create(RamMetric item)
@@ -104,6 +104,18 @@ namespace MetricsManager.DAL.Repositories
                 return connection.QuerySingle<RamMetric>(
                     "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
                 new { agentid = agentid });
+            }
+        }
+
+        public IList<RamMetric> GetByTimePeriodSorted(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            long timefrom = timeFrom.ToUnixTimeSeconds();
+            long timeto = timeTo.ToUnixTimeSeconds();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return (IList<RamMetric>)connection.Query<RamMetric>(
+                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE AgentId = @agentid AND Time > @timefrom AND Time < @timeto ORDER BY Value ASC",
+                new { agentid = agentid, timefrom = timefrom, timeto = timeto });
             }
         }
     }

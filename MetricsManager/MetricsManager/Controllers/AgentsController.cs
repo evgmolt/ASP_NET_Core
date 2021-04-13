@@ -35,7 +35,6 @@ namespace MetricsManager.Controllers
             this._logger = logger;
             this._mapper = mapper;
             _logger.LogDebug(1, "NLog встроен в AgentsController");
-
         }
 
         [HttpPost("register/address/{agentAddress}")]

@@ -96,6 +96,18 @@ namespace DAL
             }
         }
 
+        public IList<CpuMetric> GetByTimePeriodSorted(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            long timefrom = timeFrom.ToUnixTimeSeconds();
+            long timeto = timeTo.ToUnixTimeSeconds();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return (IList<CpuMetric>)connection.Query<CpuMetric>(
+                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE AgentId = @agentid AND Time > @timefrom AND Time < @timeto ORDER BY Value ASC",
+                new { agentid = agentid, timefrom = timefrom, timeto = timeto });
+            }
+        }
+
         public IList<CpuMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
         {
             return null;

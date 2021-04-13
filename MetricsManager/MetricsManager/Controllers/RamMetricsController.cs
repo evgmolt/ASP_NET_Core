@@ -36,7 +36,7 @@ namespace MetricsManager.Controllers
             [FromRoute] int agentId,
             [FromRoute] TimeSpan fromTime,
             [FromRoute] TimeSpan toTime,
-            [FromRoute] Percentile percentile)
+            [FromRoute] int percentile)
         {
             _logger.LogInformation($"GetMetricsByPercentileFromAgent:{agentId} from:{fromTime} to:{toTime} percentiles:{percentile}");
             return Ok();
