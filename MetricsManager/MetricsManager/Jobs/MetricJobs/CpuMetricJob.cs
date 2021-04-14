@@ -42,14 +42,17 @@ namespace MetricsManager.Jobs.MetricJobs
                         FromTime = fromtime,
                         ToTime = DateTimeOffset.Now
                     });
-                    foreach (var metric in metrics.Metrics)
+                    if (metrics != null)
                     {
-                        _repository.Create(new CpuMetric()
+                        foreach (var metric in metrics.Metrics)
                         {
-                            AgentId = metric.AgentId,
-                            Time = metric.Time.ToUnixTimeSeconds(),
-                            Value = metric.Value
-                        });
+                            _repository.Create(new CpuMetric()
+                            {
+                                AgentId = metric.AgentId,
+                                Time = metric.Time.ToUnixTimeSeconds(),
+                                Value = metric.Value
+                            });
+                        }
                     }
                 }
             }

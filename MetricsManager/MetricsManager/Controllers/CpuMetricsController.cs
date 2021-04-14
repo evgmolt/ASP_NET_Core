@@ -18,28 +18,19 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
-    [Route("api/metrics/cpu")]
+    [Route("api/cpumetrics")]
     [ApiController]
     public class CpuMetricsController : ControllerBase
     {
         private ICpuMetricsRepository _repository;
         private readonly ILogger<CpuMetricsController> _logger;
         private readonly IMapper _mapper;
-        private IConfiguration _configuration;
-        private IHttpClientFactory _httpClientFactory;
-        private IMetricsAgentClient _metricsAgentClient;
 
         public CpuMetricsController(
             ILogger<CpuMetricsController> logger,
             ICpuMetricsRepository repository,
-            IMapper mapper,
-            IConfiguration configuration,
-            IHttpClientFactory httpClientFactory,
-            IMetricsAgentClient metricsAgentClient)
+            IMapper mapper)
         {
-            this._metricsAgentClient = metricsAgentClient;
-            this._httpClientFactory = httpClientFactory;
-            this._configuration = configuration;
             this._repository = repository;
             this._logger = logger;
             this._mapper = mapper;
@@ -52,13 +43,6 @@ namespace MetricsManager.Controllers
             [FromRoute] DateTimeOffset fromTime,
             [FromRoute] DateTimeOffset toTime)
         {
-            //var metrics = _metricsAgentClient.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
-            //{
-            //    AgentAddress = "http://localhost:5004",
-            //    FromTime = fromTime,
-            //    ToTime = toTime
-            //});
-
             var metrics = _repository.GetByTimePeriod(agentId, fromTime, toTime);
             var response = new CpuMetricsResponse()
             {

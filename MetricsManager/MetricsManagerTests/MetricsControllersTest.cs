@@ -1,8 +1,11 @@
+using AutoFixture;
 using AutoMapper;
+using MetricsManager;
 using MetricsManager.Client;
 using MetricsManager.Controllers;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -16,143 +19,180 @@ namespace MetricsManagerTests
 {
     public class CpuMetricsControllersTest
     {
-        private CpuMetricsController controller;
-        private Mock<ILogger<CpuMetricsController>> loggerMock;
-        private Mock<ICpuMetricsRepository> repositoryMock;
-        private Mock<IMapper> mapperMock;
-        private Mock<IConfiguration> configurationMock;
-        private Mock<IHttpClientFactory> httpClientFactoryMock;
-        private Mock<IMetricsAgentClient> metricsAgentClientMock;
+        private readonly CpuMetricsController _controller;
+        private readonly Mock<ILogger<CpuMetricsController>> _loggerMock;
+        private readonly Mock<ICpuMetricsRepository> _repositoryMock;
+        private readonly Mock<IConfiguration> _configurationMock;
+        private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
+        private readonly Mock<IMetricsAgentClient> _metricsAgentClientMock;
 
         public CpuMetricsControllersTest()
         {
-            loggerMock = new Mock<ILogger<CpuMetricsController>>();
-            repositoryMock = new Mock<ICpuMetricsRepository>();
-            mapperMock = new Mock<IMapper>();
-            configurationMock = new Mock<IConfiguration>();
-            httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            controller = new CpuMetricsController(
-                loggerMock.Object, 
-                repositoryMock.Object, 
-                mapperMock.Object, 
-                configurationMock.Object,
-                httpClientFactoryMock.Object,
-                metricsAgentClientMock.Object);
+            _loggerMock = new Mock<ILogger<CpuMetricsController>>();
+            _repositoryMock = new Mock<ICpuMetricsRepository>();
+            var config = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            IMapper mapper = config.CreateMapper();
+            _controller = new CpuMetricsController(_loggerMock.Object, _repositoryMock.Object, mapper);
         }
 
         [Fact]
         public void GetCpuMetricsFromAgent_ReturnsOk()
         {
-            repositoryMock.Setup(repository => repository.GetByTimePeriodSorted(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
-                .Returns(new List<CpuMetric>());
-            //Arrange
+            var fixture = new Fixture();
+            var returnLins = fixture.Create<List<CpuMetric>>();
+
+            _repositoryMock.Setup(repository => repository.GetByTimePeriodSorted(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns((IList<CpuMetric>)returnLins);
+
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-            // Assert
+            var fromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 100);
+            var toTime = DateTimeOffset.Now;
+            var percentile = 0;
+            var result = (OkObjectResult)_controller.GetMetricsByPercentileFromAgent(agentId, fromTime, toTime, percentile);
+            var actionResult = (int)result.Value;
+            _repositoryMock.Verify(repository => repository.GetByTimePeriodSorted(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.IsAssignableFrom<int>(result.Value);
         }
     }
 
-    public class DotNetMetricsControllerTest
+    public class DotNetMetricsControllersTest
     {
-        private DotNetMetricsController controller;
-        private Mock<ILogger<DotNetMetricsController>> loggerMock;
+        private readonly DotNetMetricsController _controller;
+        private readonly Mock<ILogger<DotNetMetricsController>> _loggerMock;
+        private readonly Mock<IDotNetMetricsRepository> _repositoryMock;
 
-        public DotNetMetricsControllerTest()
+        public DotNetMetricsControllersTest()
         {
-            loggerMock = new Mock<ILogger<DotNetMetricsController>>();
-            controller = new DotNetMetricsController(loggerMock.Object);
+            _loggerMock = new Mock<ILogger<DotNetMetricsController>>();
+            _repositoryMock = new Mock<IDotNetMetricsRepository>();
+            var config = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            IMapper mapper = config.CreateMapper();
+            _controller = new DotNetMetricsController(_loggerMock.Object, _repositoryMock.Object, mapper);
         }
 
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetDotNetMetricsFromAgent_ReturnsOk()
         {
-            //Arrange
+            var fixture = new Fixture();
+            var returnList = fixture.Create<List<DotNetMetric>>();
+
+            _repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns((IList<DotNetMetric>)returnList);
+
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-            // Assert
+            var fromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 100);
+            var toTime = DateTimeOffset.Now;
+            var result = (OkObjectResult)_controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var actualResult = (List<DotNetMetric>)result.Value;
+            _repositoryMock.Verify(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.Equal(returnList[0].Id, actualResult[0].Id);
         }
     }
 
-    public class HddMetricsControllerTest
+    public class HddMetricsControllersTest
     {
-        private HddMetricsController controller;
-        private Mock<ILogger<HddMetricsController>> loggerMock;
+        private readonly HddMetricsController _controller;
+        private readonly Mock<ILogger<HddMetricsController>> _loggerMock;
+        private readonly Mock<IHddMetricsRepository> _repositoryMock;
 
-        public HddMetricsControllerTest()
+        public HddMetricsControllersTest()
         {
-            loggerMock = new Mock<ILogger<HddMetricsController>>();
-            controller = new HddMetricsController(loggerMock.Object);
+            _loggerMock = new Mock<ILogger<HddMetricsController>>();
+            _repositoryMock = new Mock<IHddMetricsRepository>();
+            var config = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            IMapper mapper = config.CreateMapper();
+            _controller = new HddMetricsController(_loggerMock.Object, _repositoryMock.Object, mapper);
         }
 
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetHddMetricsFromAgent_ReturnsOk()
         {
-            //Arrange
+            var fixture = new Fixture();
+            var returnList = fixture.Create<List<HddMetric>>();
+
+            _repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns((IList<HddMetric>)returnList);
+
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-            // Assert
+            var fromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 100);
+            var toTime = DateTimeOffset.Now;
+            var result = (OkObjectResult)_controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var actualResult = (List<HddMetric>)result.Value;
+            _repositoryMock.Verify(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.Equal(returnList[0].Id, actualResult[0].Id);
         }
     }
 
-    public class NetworkMetricsControllerTest
+    public class NetworkMetricsControllersTest
     {
-        private NetworkMetricsController controller;
-        private Mock<ILogger<NetworkMetricsController>> loggerMock;
+        private readonly NetworkMetricsController _controller;
+        private readonly Mock<ILogger<NetworkMetricsController>> _loggerMock;
+        private readonly Mock<INetworkMetricsRepository> _repositoryMock;
 
-        public NetworkMetricsControllerTest()
+        public NetworkMetricsControllersTest()
         {
-            loggerMock = new Mock<ILogger<NetworkMetricsController>>();
-            controller = new NetworkMetricsController(loggerMock.Object);
+            _loggerMock = new Mock<ILogger<NetworkMetricsController>>();
+            _repositoryMock = new Mock<INetworkMetricsRepository>();
+            var config = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            IMapper mapper = config.CreateMapper();
+            _controller = new NetworkMetricsController(_loggerMock.Object, _repositoryMock.Object, mapper);
         }
 
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetNetworkMetricsFromAgent_ReturnsOk()
         {
-            //Arrange
+            var fixture = new Fixture();
+            var returnList = fixture.Create<List<NetworkMetric>>();
+
+            _repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns((IList<NetworkMetric>)returnList);
+
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-            // Assert
+            var fromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 100);
+            var toTime = DateTimeOffset.Now;
+            var result = (OkObjectResult)_controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var actualResult = (List<NetworkMetric>)result.Value;
+            _repositoryMock.Verify(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.Equal(returnList[0].Id, actualResult[0].Id);
         }
     }
 
-    public class RamMetricsControllerTest
+    public class RamMetricsControllersTest
     {
-        private RamMetricsController controller;
-        private Mock<ILogger<RamMetricsController>> loggerMock;
+        private readonly RamMetricsController _controller;
+        private readonly Mock<ILogger<RamMetricsController>> _loggerMock;
+        private readonly Mock<IRamMetricsRepository> _repositoryMock;
 
-        public RamMetricsControllerTest()
+        public RamMetricsControllersTest()
         {
-            loggerMock = new Mock<ILogger<RamMetricsController>>();
-            controller = new RamMetricsController(loggerMock.Object);
+            _loggerMock = new Mock<ILogger<RamMetricsController>>();
+            _repositoryMock = new Mock<IRamMetricsRepository>();
+            var config = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            IMapper mapper = config.CreateMapper();
+            _controller = new RamMetricsController(_loggerMock.Object, _repositoryMock.Object, mapper);
         }
 
         [Fact]
-        public void GetMetricsFromAgent_ReturnsOk()
+        public void GetRamMetricsFromAgent_ReturnsOk()
         {
-            //Arrange
+            var fixture = new Fixture();
+            var returnList = fixture.Create<List<RamMetric>>();
+
+            _repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .Returns((IList<RamMetric>)returnList);
+
             var agentId = 1;
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
-            //Act
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-            // Assert
+            var fromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 100);
+            var toTime = DateTimeOffset.Now;
+            var result = (OkObjectResult)_controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            var actualResult = (List<RamMetric>)result.Value;
+            _repositoryMock.Verify(repository => repository.GetByTimePeriod(It.IsAny<int>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.Equal(returnList[0].Id, actualResult[0].Id);
         }
     }
 }

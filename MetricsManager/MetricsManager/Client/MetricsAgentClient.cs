@@ -53,31 +53,66 @@ namespace MetricsManager.Client
         public AllCpuMetricsApiResponse GetCpuMetrics(GetAllCpuMetricsApiRequest request)
         {            
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Cpu]);
-            return JsonConvert.DeserializeObject<AllCpuMetricsApiResponse>(content);
+            if (content != null)
+            {
+                return JsonConvert.DeserializeObject<AllCpuMetricsApiResponse>(content);
+            }
+            else 
+            {
+                return null;
+            }
         }
 
         public AllDotNetMetricsApiResponse GetDotNetMetrics(GetAllDotNetMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.DotNet]);
-            return JsonConvert.DeserializeObject<AllDotNetMetricsApiResponse>(content);
+            if (content != null)
+            {
+                return JsonConvert.DeserializeObject<AllDotNetMetricsApiResponse>(content);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public AllHddMetricsApiResponse GetHddMetrics(GetAllHddMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Hdd]);
-            return JsonConvert.DeserializeObject<AllHddMetricsApiResponse>(content);
+            if (content != null)
+            {
+                return JsonConvert.DeserializeObject<AllHddMetricsApiResponse>(content);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public AllNetworkMetricsApiResponse GetNetworkMetrics(NetworkMetrisApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Network]);
-            return JsonConvert.DeserializeObject<AllNetworkMetricsApiResponse>(content);
+            if (content != null)
+            {
+                return JsonConvert.DeserializeObject<AllNetworkMetricsApiResponse>(content);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public AllRamMetricsApiResponse GetRamMetrics(GetAllRamMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Ram]);
-            return JsonConvert.DeserializeObject<AllRamMetricsApiResponse>(content);
+            if (content != null)
+            {
+                return JsonConvert.DeserializeObject<AllRamMetricsApiResponse>(content);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
