@@ -22,9 +22,6 @@ namespace MetricsManagerTests
         private readonly CpuMetricsController _controller;
         private readonly Mock<ILogger<CpuMetricsController>> _loggerMock;
         private readonly Mock<ICpuMetricsRepository> _repositoryMock;
-        private readonly Mock<IConfiguration> _configurationMock;
-        private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
-        private readonly Mock<IMetricsAgentClient> _metricsAgentClientMock;
 
         public CpuMetricsControllersTest()
         {

@@ -1,6 +1,7 @@
 ﻿using Core;
 using MetricsManager.Client.ApiRequests;
 using MetricsManager.Client.ApiResponses;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NLog;
 using System;
@@ -16,10 +17,12 @@ namespace MetricsManager.Client
     public class MetricsAgentClient : IMetricsAgentClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<MetricsAgentClient> _logger;
 
-        public MetricsAgentClient(HttpClient httpClient)
+        public MetricsAgentClient(HttpClient httpClient, ILogger<MetricsAgentClient> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         private string GetMetricsApiResponseString(ApiRequest request, string tableName)
@@ -45,6 +48,7 @@ namespace MetricsManager.Client
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return null;
             }
             
@@ -59,6 +63,7 @@ namespace MetricsManager.Client
             }
             else 
             {
+                _logger.LogError("null content");
                 return null;
             }
         }
@@ -72,6 +77,7 @@ namespace MetricsManager.Client
             }
             else
             {
+                _logger.LogError("null content");
                 return null;
             }
         }
@@ -85,6 +91,7 @@ namespace MetricsManager.Client
             }
             else
             {
+                _logger.LogError("null content");
                 return null;
             }
         }
@@ -98,6 +105,7 @@ namespace MetricsManager.Client
             }
             else
             {
+                _logger.LogError("null content");
                 return null;
             }
         }
@@ -111,6 +119,7 @@ namespace MetricsManager.Client
             }
             else
             {
+                _logger.LogError("null content");
                 return null;
             }
         }

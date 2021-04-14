@@ -13,7 +13,7 @@ namespace MetricsManager.Client
  
         AllHddMetricsApiResponse GetHddMetrics(GetAllHddMetricsApiRequest request);
 
-        AllNetworkMetricsApiResponse GetNetworkMetrics(NetworkMetrisApiRequest request);
+        AllNetworkMetricsApiResponse GetNetworkMetrics(GetAllNetworkMetrisApiRequest request);
 
         AllRamMetricsApiResponse GetRamMetrics(GetAllRamMetricsApiRequest request);
     }

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
-
     [Route("api/rammetrics")]
     [ApiController]
     public class RamMetricsController : ControllerBase
@@ -78,24 +77,6 @@ namespace MetricsManager.Controllers
                 values[i] = response.Metrics[i].Value;
             }
             return Ok(PercentileCounter.GetPercentile(values, percentile));
-        }
-
-        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetricsFromAllCluster(
-            [FromRoute] TimeSpan fromTime,
-            [FromRoute] TimeSpan toTime)
-        {
-            _logger.LogInformation($"GetMetricsFromAllCluster from:{fromTime} to:{toTime}");
-            return Ok();
-        }
-        [HttpGet("cluster/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
-        public IActionResult GetMetricsByPercentileFromAllCluster(
-            [FromRoute] TimeSpan fromTime,
-            [FromRoute] TimeSpan toTime,
-            [FromRoute] Percentile percentile)
-        {
-            _logger.LogInformation($"GetMetricsByPercentileFromAllCluster from:{fromTime} to:{toTime} percentiles:{percentile}");
-            return Ok();
         }
     }
 }

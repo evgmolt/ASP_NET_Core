@@ -1,9 +1,11 @@
 ﻿using MetricsManager.Client;
+using MetricsManager.Controllers;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
 using MetricsManager.DAL.Repositories;
 using MetricsManager.Responses;
 using MetricsManager.Responses.DTO;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -12,49 +14,61 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
- //   [DisallowConcurrentExecution]
     public class CpuMetricJob : IJob
     {
-        private ICpuMetricsRepository _repository;
-        private IAgentsRepository _agentsRepository;
-        private IMetricsAgentClient _client;
+        private readonly ICpuMetricsRepository _repository;
+        private readonly IAgentsRepository _agentsRepository;
+        private readonly IMetricsAgentClient _client;
+        private readonly ILogger<CpuMetricJob> _logger;
 
-        public CpuMetricJob(ICpuMetricsRepository repository, IAgentsRepository agentsRepository, IMetricsAgentClient client)
+        public CpuMetricJob(
+            ICpuMetricsRepository repository, 
+            IAgentsRepository agentsRepository, 
+            IMetricsAgentClient client, 
+            ILogger<CpuMetricJob> logger)
         {
             _agentsRepository = agentsRepository;
             _repository = repository;
             _client = client;
+            _logger = logger;
         }
 
         public Task Execute(IJobExecutionContext context)
         {
-            var agents = _agentsRepository.GetAgentsList();
-            for (int i = 0; i < agents.Count(); i++)
+            try
             {
-                if (agents[i].Enabled)
+                var agents = _agentsRepository.GetAgentsList();
+                for (int i = 0; i < agents.Count(); i++)
                 {
-                    CpuMetric lastmetric = _repository.GetLast(i);
-                    long fromtimesec = lastmetric?.Time ?? 0;
-                    DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
-                    var metrics = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
+                    if (agents[i].Enabled)
                     {
-                        AgentAddress = agents[i].AgentAddress,
-                        FromTime = fromtime,
-                        ToTime = DateTimeOffset.Now
-                    });
-                    if (metrics != null)
-                    {
-                        foreach (var metric in metrics.Metrics)
+                        CpuMetric lastmetric = _repository.GetLast(i);
+                        long fromtimesec = lastmetric?.Time ?? 0;
+                        DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
+                        var metrics = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
                         {
-                            _repository.Create(new CpuMetric()
+                            AgentAddress = agents[i].AgentAddress,
+                            FromTime = fromtime,
+                            ToTime = DateTimeOffset.Now
+                        });
+                        if (metrics != null)
+                        {
+                            foreach (var metric in metrics.Metrics)
                             {
-                                AgentId = metric.AgentId,
-                                Time = metric.Time.ToUnixTimeSeconds(),
-                                Value = metric.Value
-                            });
+                                _repository.Create(new CpuMetric()
+                                {
+                                    AgentId = metric.AgentId,
+                                    Time = metric.Time.ToUnixTimeSeconds(),
+                                    Value = metric.Value
+                                });
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
             }
             return Task.CompletedTask;
         }
