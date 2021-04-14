@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using AutoMapper;
+using Enums;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Requests;
 using MetricsAgent.Responses;
@@ -18,11 +19,13 @@ namespace MetricsAgent.Controllers
     {
         private ICpuMetricsRepository _repository;
         private readonly ILogger<CpuMetricsController> _logger;
+        private readonly IMapper _mapper;
 
-        public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository)
+        public CpuMetricsController(ILogger<CpuMetricsController> logger, ICpuMetricsRepository repository, IMapper mapper)
         {
             this._repository = repository;
-            _logger = logger;
+            this._logger = logger;
+            this._mapper = mapper;
             _logger.LogInformation(1, "NLog встроен в CpuMetricsController");
         }
 
@@ -37,13 +40,29 @@ namespace MetricsAgent.Controllers
             return Ok();
         }
 
-        //рекомендовал бы тут юзать DateTimeOffset и на вход в API передавать человеческое время,
-        //и у метода repository GetByTimePeriod юзал бы сигнатуру(DateTimeOffset, DateTimeOffset)
-        //а уже внутри репозитори при формирования запроса к БД, где хранится число предложил бы сделать DateTimeOffset.ToUnixDatetime
+        [HttpGet()]
+        public IActionResult GetAll()
+        {
+            _logger.LogInformation($"GetAll");
+
+            var metrics = _repository.GetAll();
+            var response = new CpuMetricsResponse()
+            {
+                Metrics = new List<CpuMetricDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
+            }
+
+            return Ok(response);
+        }
+
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics(
-            [FromRoute] int fromTime,
-            [FromRoute] int toTime)
+            [FromRoute] DateTimeOffset fromTime,
+            [FromRoute] DateTimeOffset toTime)
         {
             _logger.LogInformation($"GetMetrics from:{fromTime} to:{toTime}");
 
@@ -55,12 +74,7 @@ namespace MetricsAgent.Controllers
 
             foreach (var metric in metrics)
             {
-                response.Metrics.Add(new CpuMetricDto
-                {
-                    Time = metric.Time,
-                    Value = metric.Value,
-                    Id = metric.Id
-                });
+                response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
             }
 
             return Ok(response);

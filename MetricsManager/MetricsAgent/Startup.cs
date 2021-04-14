@@ -1,4 +1,6 @@
+using AutoMapper;
 using Core;
+using Core.Interfaces;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,20 +34,30 @@ namespace MetricsAgent
         {
             services.AddControllers();
             ConfigureSqlLiteConnection(services);
+
             services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddScoped<IDotNetMetricsRepository, DotNetMetricsRepository>();
             services.AddScoped<IHddMetricsRepository, HddMetricsRepository>();
             services.AddScoped<INetworkMetricsRepository, NetworkMetricsRepository>();
             services.AddScoped<IRamMetricsRepository, RamMetricsRepository>();
+
+            services.AddTransient<INotifierMediatorService, NotifierMediatorService>();
+
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
-            string connectionString = "Data Source=:memory:";
-            var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            PrepareSchema(connection);
-            services.AddSingleton(connection);
+            if (!File.Exists(Strings.DbFileName))
+            {
+                SQLiteConnection.CreateFile(Strings.DbFileName);
+                string connectionString = "Data Source=" + Strings.DbFileName;
+                var connection = new SQLiteConnection(connectionString);
+                connection.Open();
+                PrepareSchema(connection);
+            }
         }
         private void PrepareSchema(SQLiteConnection connection)
         {
@@ -66,15 +79,22 @@ namespace MetricsAgent
             }
         }
 
+        private string GetDateString(int n)
+        {
+            DateTimeOffset datetime = DateTimeOffset.Parse(n.ToString().PadLeft(2, '0') + "-01-2020");
+            long unixtime = datetime.ToUnixTimeSeconds();
+            return unixtime.ToString();
+        }
+
         private void FillTable(SQLiteConnection connection, string tablename)
         {
-            int _numOfRecords = 5;
+            int _numOfRecords = 10;
             using (var command = new SQLiteCommand(connection))
             {
                 Random rand = new Random();
                 for (int i = 0; i < _numOfRecords; i++)
                 {
-                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + i.ToString() + ")";
+                    command.CommandText = "INSERT INTO " + tablename + "(value, time) VALUES(" + rand.Next(0,100).ToString() +", " + GetDateString(i + 1) + ")";
                     command.ExecuteNonQuery();
                 }
             }
