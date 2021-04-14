@@ -108,5 +108,10 @@ namespace MetricsManager.DAL.Repositories
                 }
             }
         }
+
+        public IList<DotNetMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            return null;
+        }
     }
 }

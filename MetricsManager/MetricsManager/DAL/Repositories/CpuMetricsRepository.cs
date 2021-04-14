@@ -108,8 +108,9 @@ namespace DAL
             }
         }
 
-        public IList<CpuMetric> GetByTimePeriod(int timeFrom, int timeTo)
+        public IList<CpuMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
         {
+            return null;
         }
     }
 }

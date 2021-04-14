@@ -9,12 +9,4 @@ namespace MetricsManager.Responses
     {
         public List<CpuMetricDto> Metrics { get; set; }
     }
-
-    public class CpuMetricDto
-    {
-        public int Id { get; set; }
-        public int AgentId { get; set; }
-        public int Value { get; set; }
-        public int Time { get; set; }
-    }
 }
