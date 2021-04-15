@@ -6,6 +6,6 @@ namespace MetricsAgent.DAL.Interfaces
     {
         public int Id { get; set; }
         public int Value { get; set; }
-        public int Time { get; set; }
+        public long Time { get; set; }
     }
 }
