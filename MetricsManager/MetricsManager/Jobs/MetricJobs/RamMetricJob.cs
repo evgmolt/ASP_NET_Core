@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
+    [DisallowConcurrentExecution]
     public class RamMetricJob : IJob
     {
         private IRamMetricsRepository _repository;

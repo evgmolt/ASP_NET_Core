@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
+    [DisallowConcurrentExecution]
     public class DotNetMetricJob : IJob
     {
         private IDotNetMetricsRepository _repository;
         private IAgentsRepository _agentsRepository;
         private IMetricsAgentClient _client;
         private readonly ILogger<DotNetMetricJob> _logger;
-
 
         public DotNetMetricJob(
             IDotNetMetricsRepository repository, 
@@ -30,6 +30,7 @@ namespace MetricsManager.Jobs.MetricJobs
             _agentsRepository = agentsRepository;
             _repository = repository;
             _client = client;
+            _logger = logger;
         }
 
         public Task Execute(IJobExecutionContext context)

@@ -4,6 +4,7 @@ using MetricsManager.DAL;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -17,9 +18,11 @@ namespace DAL
         private string _tablename;
         private IConfiguration _configuration;
         private string _connectionString;
+        private readonly ILogger<CpuMetricsRepository> _logger;
 
-        public CpuMetricsRepository(IConfiguration configuration)
+        public CpuMetricsRepository(IConfiguration configuration, ILogger<CpuMetricsRepository> logger)
         {
+            _logger = logger;
             _configuration = configuration;
             _connectionString = _configuration.GetValue<string>("ConnectionString");
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
@@ -120,12 +123,12 @@ namespace DAL
                 try
                 {
                     return connection.QuerySingle<CpuMetric>(
-                "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
-                new { agentid = agentid });
-
+                        "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
+                        new { agentid = agentid });
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.LogError(ex.Message);
                     return null;
                 }
             }
