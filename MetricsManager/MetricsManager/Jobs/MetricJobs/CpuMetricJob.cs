@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
+    [DisallowConcurrentExecution]
     public class CpuMetricJob : IJob
     {
         private readonly ICpuMetricsRepository _repository;

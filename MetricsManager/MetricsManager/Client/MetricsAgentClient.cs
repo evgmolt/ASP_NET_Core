@@ -96,7 +96,7 @@ namespace MetricsManager.Client
             }
         }
 
-        public AllNetworkMetricsApiResponse GetNetworkMetrics(NetworkMetrisApiRequest request)
+        public AllNetworkMetricsApiResponse GetNetworkMetrics(GetAllNetworkMetrisApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, Strings.TableNames[(int)Enums.MetricsNames.Network]);
             if (content != null)

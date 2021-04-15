@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.Jobs.MetricJobs
 {
+    [DisallowConcurrentExecution]
     public class HddMetricJob : IJob
     {
         private readonly IHddMetricsRepository _repository;

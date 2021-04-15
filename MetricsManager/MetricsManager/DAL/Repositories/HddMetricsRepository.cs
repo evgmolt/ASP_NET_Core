@@ -101,9 +101,16 @@ namespace MetricsManager.DAL.Repositories
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.QuerySingle<HddMetric>(
-                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
-                new { agentid = agentid });
+                try
+                {
+                    return connection.QuerySingle<HddMetric>(
+                                "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
+                            new { agentid = agentid });
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
         }
 

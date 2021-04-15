@@ -86,13 +86,15 @@ namespace MetricsManager
 
             services.AddHostedService<QuartzHostedService>();
 
-            services.AddHttpClient();
+//            services.AddHttpClient();
             services.AddHttpClient<IMetricsAgentClient, MetricsAgentClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
+            migrationRunner.MigrateUp();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -108,8 +110,6 @@ namespace MetricsManager
             {
                 endpoints.MapControllers();
             });
-
-            migrationRunner.MigrateUp();
         }
     }
 }
