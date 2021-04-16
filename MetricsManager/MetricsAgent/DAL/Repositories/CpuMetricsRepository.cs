@@ -86,9 +86,13 @@ namespace MetricsAgent.DAL.Repositories
             long timeto = timeTo.ToUnixTimeSeconds();
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return (IList<CpuMetric>)connection.Query<CpuMetric>(
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    return (IList<CpuMetric>)connection.Query<CpuMetric>(
                     "SELECT Id, Time, Value FROM " + _tablename + " WHERE Time >= @timefrom AND Time <= @timeto",
-                new { timefrom = timefrom, timeto = timeto }) ;
+                    new { timefrom = timefrom, timeto = timeto });
+                }
             }
         }
     }

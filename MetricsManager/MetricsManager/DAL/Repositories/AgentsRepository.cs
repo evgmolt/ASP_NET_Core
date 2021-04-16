@@ -35,6 +35,15 @@ namespace MetricsManager.DAL.Repositories
             }
         }
 
+        public void DeleteAgentById(int id)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("DELETE FROM " + Strings.AgentsTableName + "  WHERE id = @id",
+                new { id = id });
+            }
+        }
+
         public void EnableAgentById(int id)
         {
             using (var connection = new SQLiteConnection(_connectionString))
