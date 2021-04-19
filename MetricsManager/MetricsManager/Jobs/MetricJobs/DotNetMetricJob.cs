@@ -17,13 +17,13 @@ namespace MetricsManager.Jobs.MetricJobs
     public class DotNetMetricJob : IJob
     {
         private IDotNetMetricsRepository _repository;
-        private IAgentsRepository _agentsRepository;
+        private IAgentsRepository<AgentInfo> _agentsRepository;
         private IMetricsAgentClient _client;
         private readonly ILogger<DotNetMetricJob> _logger;
 
         public DotNetMetricJob(
             IDotNetMetricsRepository repository, 
-            IAgentsRepository agentsRepository, 
+            IAgentsRepository<AgentInfo> agentsRepository, 
             IMetricsAgentClient client,
             ILogger<DotNetMetricJob> logger)
         {
@@ -42,8 +42,8 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        DotNetMetric lastmetric = _repository.GetLast(i);
-                        long fromtimesec = lastmetric?.Time ?? 0;
+                        DotNetMetric lastMetric = _repository.GetLast(i);
+                        long fromtimesec = lastMetric?.Time ?? 0;
                         DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
                         var metrics = _client.GetDotNetMetrics(new GetAllDotNetMetricsApiRequest()
                         {

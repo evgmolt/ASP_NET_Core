@@ -2,6 +2,7 @@
 using Dapper;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace MetricsManager.DAL.Repositories
 {
-    public class IAgentsRepository : IAgentsRepository<AgentInfo>
+    public class AgentsRepository : IAgentsRepository<AgentInfo>
     {
-        private IConfiguration _configuration;
+        private ISqlSettingsProvider _sqlSettingsProvider;
         private string _connectionString;
 
-        public IAgentsRepository(IConfiguration configuration)
+        public AgentsRepository(ISqlSettingsProvider sqlSettingsProvider)
         {
-            this._configuration = configuration;
-            _connectionString = _configuration.GetValue<string>("ConnectionString");
+            _sqlSettingsProvider = sqlSettingsProvider;
+            _connectionString = _sqlSettingsProvider.GetConnectionString();
         }
 
         public void RegisterAgent(AgentInfo item)

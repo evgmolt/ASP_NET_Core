@@ -17,13 +17,13 @@ namespace MetricsManager.Jobs.MetricJobs
     public class RamMetricJob : IJob
     {
         private IRamMetricsRepository _repository;
-        private IAgentsRepository _agentsRepository;
+        private IAgentsRepository<AgentInfo> _agentsRepository;
         private IMetricsAgentClient _client;
         private readonly ILogger<RamMetricJob> _logger;
 
         public RamMetricJob(
             IRamMetricsRepository repository, 
-            IAgentsRepository agentsRepository, 
+            IAgentsRepository<AgentInfo> agentsRepository, 
             IMetricsAgentClient client, 
             ILogger<RamMetricJob> logger)
         {
@@ -42,8 +42,8 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        RamMetric lastmetric = _repository.GetLast(i);
-                        long fromtimesec = lastmetric?.Time ?? 0;
+                        RamMetric lastMetric = _repository.GetLast(i);
+                        long fromtimesec = lastMetric?.Time ?? 0;
                         DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
                         var metrics = _client.GetRamMetrics(new GetAllRamMetricsApiRequest()
                         {

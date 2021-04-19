@@ -3,7 +3,9 @@ using DAL;
 using Dapper;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -15,13 +17,15 @@ namespace MetricsManager.DAL.Repositories
     public class DotNetMetricsRepository : IDotNetMetricsRepository
     {
         private string _tablename;
-        private IConfiguration _configuration;
+        private ISqlSettingsProvider _sqlSettingsProvider;
         private string _connectionString;
+        private readonly ILogger<DotNetMetricsRepository> _logger;
 
-        public DotNetMetricsRepository(IConfiguration configuration)
+        public DotNetMetricsRepository(ISqlSettingsProvider sqlSettingsProvider, ILogger<DotNetMetricsRepository> logger)
         {
-            _configuration = configuration;
-            _connectionString = _configuration.GetValue<string>("ConnectionString");
+            _logger = logger;
+            _sqlSettingsProvider = sqlSettingsProvider;
+            _connectionString = _sqlSettingsProvider.GetConnectionString();
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.DotNet];
         }
@@ -103,8 +107,8 @@ namespace MetricsManager.DAL.Repositories
                 try
                 {
                     return connection.QuerySingle<DotNetMetric>(
-                                "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
-                            new { agentid = agentid });
+                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
+                         new { agentid = agentid });
                 }
                 catch (Exception)
                 {

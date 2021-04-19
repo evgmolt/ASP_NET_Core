@@ -16,6 +16,8 @@ using Quartz;
 using Core;
 using Quartz.Impl;
 using MetricsManager.Client;
+using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 
 namespace MetricsManager
 {
@@ -33,7 +35,8 @@ namespace MetricsManager
         {
             services.AddControllers();
 
-            services.AddSingleton<IAgentsRepository, IAgentsRepository>();
+            services.AddSingleton<ISqlSettingsProvider, SqlSettingsProvider>();
+            services.AddSingleton<IAgentsRepository<AgentInfo>, AgentsRepository>();
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
             services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();

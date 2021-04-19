@@ -19,14 +19,14 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class AgentsController : ControllerBase
     {
-        private IAgentsRepository _repository;
+        private IAgentsRepository<AgentInfo> _repository;
         private readonly ILogger<AgentsController> _logger;
         private readonly IMapper _mapper;
         private IConfiguration _configuration;
 
         public AgentsController(
             ILogger<AgentsController> logger,
-            IAgentsRepository repository,
+            IAgentsRepository<AgentInfo> repository,
             IMapper mapper,
             IConfiguration configuration)
         {
