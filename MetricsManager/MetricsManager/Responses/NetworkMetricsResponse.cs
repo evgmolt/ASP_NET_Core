@@ -9,12 +9,4 @@ namespace MetricsManager.Responses
     {
         public List<NetworkMetricDto> Metrics { get; set; }
     }
-
-    public class NetworkMetricDto
-    {
-        public int Id { get; set; }
-        public int AgentId { get; set; }
-        public int Value { get; set; }
-        public int Time { get; set; }
-    }
 }

@@ -1,7 +1,11 @@
 ﻿using Core;
 using DAL;
+using Dapper;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -12,101 +16,118 @@ namespace MetricsManager.DAL.Repositories
 {
     public class DotNetMetricsRepository : IDotNetMetricsRepository
     {
-        private SQLiteConnection _connection;
         private string _tablename;
+        private ISqlSettingsProvider _sqlSettingsProvider;
+        private string _connectionString;
+        private readonly ILogger<DotNetMetricsRepository> _logger;
 
-        public DotNetMetricsRepository(SQLiteConnection connection)
+        public DotNetMetricsRepository(ISqlSettingsProvider sqlSettingsProvider, ILogger<DotNetMetricsRepository> logger)
         {
+            _logger = logger;
+            _sqlSettingsProvider = sqlSettingsProvider;
+            _connectionString = _sqlSettingsProvider.GetConnectionString();
+            SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.DotNet];
-            this._connection = connection;
         }
 
         public void Create(DotNetMetric item)
         {
-            // создаем команду
-            using var cmd = new SQLiteCommand(_connection);
-            // прописываем в команду SQL запрос на вставку данных
-            cmd.CommandText = "INSERT INTO " + _tablename + "(value, time) VALUES(@value, @time)";
-            // добавляем параметры в запрос из нашего объекта
-            cmd.Parameters.AddWithValue("@value", item.Value);
-            // в таблице будем хранить время в секундах, потому преобразуем перед записью в секунды
-            // через свойство
-            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
-            // подготовка команды к выполнению
-            cmd.Prepare();
-            // выполнение команды
-            cmd.ExecuteNonQuery();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("INSERT INTO " + _tablename + "(agentid, value, time) VALUES(@agentid, @value, @time)",
+                new
+                {
+                    agentid = item.AgentId,
+                    value = item.Value,
+                    time = item.Time
+                });
+            }
         }
 
         public void Delete(int id)
         {
-            using var cmd = new SQLiteCommand(_connection);
-            // прописываем в команду SQL запрос на удаление данных
-            cmd.CommandText = "DELETE FROM " + _tablename + " WHERE id=@id";
-            cmd.Parameters.AddWithValue("@id", id);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("DELETE FROM " + _tablename + " WHERE id=@id",
+                new
+                {
+                    id = id
+                });
+            }
         }
 
         public void Update(DotNetMetric item)
         {
-            using var cmd = new SQLiteCommand(_connection);
-            // прописываем в команду SQL запрос на обновление данных
-            cmd.CommandText = "UPDATE " + _tablename + " SET value = @value, time = @time WHERE id = @id; ";
-            cmd.Parameters.AddWithValue("@id", item.Id);
-            cmd.Parameters.AddWithValue("@value", item.Value);
-            cmd.Parameters.AddWithValue("@time", item.Time.TotalSeconds);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute("UPDATE " + _tablename + " SET agebtid = @agentid, value = @value, time = @time WHERE id = @id",
+                new
+                {
+                    agentid = item.AgentId,
+                    value = item.Value,
+                    time = item.Time,
+                    id = item.Id
+                });
+            }
         }
 
         public IList<DotNetMetric> GetAll()
         {
-            using var cmd = new SQLiteCommand(_connection);
-            // прописываем в команду SQL запрос на получение всех данных из таблицы
-            cmd.CommandText = "SELECT * FROM " + _tablename;
-            var returnList = new List<DotNetMetric>();
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            using (var connection = new SQLiteConnection(_connectionString))
             {
-                // пока есть что читать -- читаем
-                while (reader.Read())
-                {
-                    // добавляем объект в список возврата
-                    returnList.Add(new DotNetMetric
-                    {
-                        Id = reader.GetInt32(0),
-                        Value = reader.GetInt32(0),
-                        // налету преобразуем прочитанные секунды в метку времени
-                        Time = TimeSpan.FromSeconds(reader.GetInt32(0))
-                    });
-                }
+                return connection.Query<DotNetMetric>("SELECT Id, AgentId, Time, Value FROM " + _tablename).ToList();
             }
-            return returnList;
         }
 
         public DotNetMetric GetById(int id)
         {
-            using var cmd = new SQLiteCommand(_connection);
-            cmd.CommandText = "SELECT * FROM " + _tablename + " WHERE id=@id";
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            using (var connection = new SQLiteConnection(_connectionString))
             {
-                // если удалось что то прочитать
-                if (reader.Read())
+                return connection.QuerySingle<DotNetMetric>("SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE id = @id",
+                new { id = id });
+            }
+        }
+
+        public IList<DotNetMetric> GetByTimePeriod(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            long timefrom = timeFrom.ToUnixTimeSeconds();
+            long timeto = timeTo.ToUnixTimeSeconds();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return (IList<DotNetMetric>)connection.Query<DotNetMetric>(
+                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE AgentId = @agentid AND Time > @timefrom AND Time < @timeto",
+                new { agentid = agentid, timefrom = timefrom, timeto = timeto });
+            }
+        }
+
+        public DotNetMetric GetLast(int agentid)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                try
                 {
-                    // возвращаем прочитанное
-                    return new DotNetMetric
-                    {
-                        Id = reader.GetInt32(0),
-                        Value = reader.GetInt32(0),
-                        Time = TimeSpan.FromSeconds(reader.GetInt32(0))
-                    };
+                    return connection.QuerySingle<DotNetMetric>(
+                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
+                         new { agentid = agentid });
                 }
-                else
+                catch (Exception)
                 {
-                    // не нашлось запись по идентификатору, не делаем ничего
                     return null;
                 }
             }
         }
+
+        public IList<DotNetMetric> GetByTimePeriodSorted(int agentid, DateTimeOffset timeFrom, DateTimeOffset timeTo)
+        {
+            long timefrom = timeFrom.ToUnixTimeSeconds();
+            long timeto = timeTo.ToUnixTimeSeconds();
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return (IList<DotNetMetric>)connection.Query<DotNetMetric>(
+                    "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE AgentId = @agentid AND Time > @timefrom AND Time < @timeto ORDER BY Value ASC",
+                new { agentid = agentid, timefrom = timefrom, timeto = timeto });
+            }
+        }
     }
+
 }

@@ -1,19 +1,23 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Threading.Tasks;
-using System.Data.SQLite;
 using DAL;
 using MetricsManager.DAL.Interfaces;
+using AutoMapper;
+using MetricsManager.DAL.Repositories;
+using FluentMigrator.Runner;
+using MetricsManager.Jobs.MetricJobs;
+using MetricsManager.Jobs;
+using Quartz.Spi;
+using Quartz;
+using Core;
+using Quartz.Impl;
+using MetricsManager.Client;
+using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 
 namespace MetricsManager
 {
@@ -30,36 +34,70 @@ namespace MetricsManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            ConfigureSqlLiteConnection(services);
-            services.AddScoped<ICpuMetricsRepository, CpuMetricsRepository>();
-        }
 
-        private void ConfigureSqlLiteConnection(IServiceCollection services)
-        {
-            string connectionString = "Data Source=:memory:";
-            var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            PrepareSchema(connection);
-            services.AddSingleton(connection);
-        }
+            services.AddSingleton<ISqlSettingsProvider, SqlSettingsProvider>();
+            services.AddSingleton<IAgentsRepository<AgentInfo>, AgentsRepository>();
+            services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
+            services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
+            services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
+            services.AddSingleton<INetworkMetricsRepository, NetworkMetricsRepository>();
+            services.AddSingleton<IRamMetricsRepository, RamMetricsRepository>();
 
-        private void PrepareSchema(SQLiteConnection connection)
-        {
-            using (var command = new SQLiteCommand(connection))
-            {
-                // задаем новый текст команды для выполнения
-                // удаляем таблицу с метриками если она существует в базе данных
-                command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
-                // отправляем запрос в базу данных
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, agentid INT, value INT, time INT)";
-                command.ExecuteNonQuery();
-            }
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
+
+            string _connectionString = Configuration.GetValue<string>("ConnectionString");
+
+            services.AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb.AddSQLite()
+            .WithGlobalConnectionString(_connectionString)
+            .ScanIn(typeof(Startup).Assembly).For.Migrations()
+            ).AddLogging(lb => lb
+            .AddFluentMigratorConsole());
+
+            services.AddSingleton<IJobFactory, SingletonJobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+
+            int getMetricsInterval = Configuration.GetValue<int>("GetMetricsInterval");
+            string cronString = String.Format(Strings.CronString, getMetricsInterval);
+
+            services.AddSingleton<CpuMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(CpuMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<DotNetMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(DotNetMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<HddMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(HddMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<NetworkMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(NetworkMetricJob),
+                cronExpression: cronString));
+
+            services.AddSingleton<RamMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(RamMetricJob),
+                cronExpression: cronString));
+
+            services.AddHostedService<QuartzHostedService>();
+
+//            services.AddHttpClient();
+            services.AddHttpClient<IMetricsAgentClient, MetricsAgentClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
+            migrationRunner.MigrateUp();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

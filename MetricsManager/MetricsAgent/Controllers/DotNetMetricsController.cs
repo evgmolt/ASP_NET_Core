@@ -4,6 +4,7 @@ using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,16 +13,22 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/dotnet")]
+    [Route("api/dotnetmetrics")]
     [ApiController]
     public class DotNetMetricsController : ControllerBase
     {
-        private IDotNetMetricsRepository _repository;
+        private readonly IDotNetMetricsRepository _repository;
         private readonly ILogger<DotNetMetricsController> _logger;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public DotNetMetricsController(ILogger<DotNetMetricsController> logger, IDotNetMetricsRepository repository, IMapper mapper)
+        public DotNetMetricsController(
+            ILogger<DotNetMetricsController> logger, 
+            IDotNetMetricsRepository repository, 
+            IMapper mapper,
+            IConfiguration configuration)
         {
+            this._configuration = configuration;
             this._repository = repository;
             this._logger = logger;
             this._mapper = mapper;
@@ -59,5 +66,29 @@ namespace MetricsAgent.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("getlast")]
+        public IActionResult GetLastMetric()
+        {
+            _logger.LogInformation($"GetLastMetric");
+
+            int metricsInterval = _configuration.GetValue<int>("GetMetricsInterval");
+            metricsInterval = metricsInterval + metricsInterval / 2;
+            TimeSpan timeShift = new TimeSpan(0, 0, metricsInterval);
+            DateTimeOffset timeNow = DateTimeOffset.Now;
+            var metrics = _repository.GetByTimePeriod(timeNow - timeShift, timeNow);
+            var response = new DotNetMetricsResponse()
+            {
+                Metrics = new List<DotNetMetricDto>()
+            };
+
+            foreach (var metric in metrics)
+            {
+                response.Metrics.Add(_mapper.Map<DotNetMetricDto>(metric));
+            }
+
+            return Ok(response);
+        }
+
     }
 }
