@@ -31,6 +31,17 @@ namespace MetricsManager.Controllers
             _logger.LogDebug(1, "NLog встроен в NetworkMetricsController");
         }
 
+        /// <summary>
+        /// Получает метрики от агента в заданном диапазоне времени
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// GET api/networkmetrics/agent/3/from/2021-04-13T05:00:00+00:00/to/2021-04-13T05:00:20+00:00
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>
+        /// <param name="fromTime">начальный момент времени 2021-04-13T05:00:00+00:00</param>
+        /// <param name="toTime">конечный  момент времени 2021-04-13T05:00:20+00:00</param>
+        /// <returns>Список метрик, сохраненных агентом  в заданном диапазоне времени</returns>
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetricsFromAgent(
             [FromRoute] int agentId,
@@ -51,6 +62,18 @@ namespace MetricsManager.Controllers
             return Ok(metrics);
         }
 
+        /// <summary>
+        /// Получает перцентиль от агента в заданном диапазоне времени
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// GET api/networkmetrics/agent/3/from/2021-04-13T05:00:00+00:00/to/2021-04-13T05:00:20+00:00/0
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>
+        /// <param name="fromTime">начальный момент времени 2021-04-13T05:00:00+00:00</param>
+        /// <param name="toTime">конечный  момент времени 2021-04-13T05:00:20+00:00</param>
+        /// <param name="percentile">индекс перцентиля из списка (с 0) { 50, 75, 90, 95, 99 } </param>
+        /// <returns>Значение перцентиля за заданный диапазон времени</returns>
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
         public IActionResult GetMetricsByPercentileFromAgent(
             [FromRoute] int agentId,

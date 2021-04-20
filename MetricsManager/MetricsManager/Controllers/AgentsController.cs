@@ -37,6 +37,14 @@ namespace MetricsManager.Controllers
             _logger.LogDebug(1, "NLog встроен в AgentsController");
         }
 
+        /// <summary>
+        /// Регистрирует нового агента
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// POST /api/agents/register/address/localhost:5004
+        /// </remarks>
+        /// <param name="agentAddress">URL агента</param>
         [HttpPost("register/address/{agentAddress}")]
         public IActionResult RegisterAgent([FromRoute] string agentAddress)
         {
@@ -45,12 +53,44 @@ namespace MetricsManager.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Удаляет агента
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// DELETE /api/agents/agents/delete/2
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>
+        [HttpDelete("delete/{agentId}")]
+        public IActionResult DeleteAgentById([FromRoute] int agentId)
+        {
+            _repository.DeleteAgentById(agentId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Включает агента
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// PUT /api/agents/enable/2
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>        
         [HttpPut("enable/{agentId}")]
         public IActionResult EnableAgentById([FromRoute] int agentId)
         {
             _repository.EnableAgentById(agentId);
             return Ok();
         }
+
+        /// <summary>
+        /// Выключает агента
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// PUT /api/agents/disable/2
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>        
         [HttpPut("disable/{agentId}")]
         public IActionResult DisableAgentById([FromRoute] int agentId)
         {
@@ -58,6 +98,30 @@ namespace MetricsManager.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Получает агента по ID
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// GET api/agents/getagentbyid/2
+        /// </remarks>
+        /// <param name="agentId">ID агента</param>
+        /// <returns>Агент c заданным ID</returns>
+        [HttpGet("getagentbyid/{agentId}")]
+        public IActionResult GetAgentById([FromRoute] int agentId)
+        {
+            var agent = _repository.GetAgentById(agentId);
+            return Ok(agent);
+        }
+
+        /// <summary>
+        /// Получает список всехс агентов
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        /// GET api/agents/getagents
+        /// </remarks>
+        /// <returns>Cписок всехс агентов</returns>
         [HttpGet("getagents")]
         public IActionResult GetAgentsList()
         {
