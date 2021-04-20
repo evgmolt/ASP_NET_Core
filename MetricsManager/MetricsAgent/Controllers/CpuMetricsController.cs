@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/cpu")]
+    [Route("api/cpumetrics")]
     [ApiController]
     public class CpuMetricsController : ControllerBase
     {
@@ -89,18 +89,6 @@ namespace MetricsAgent.Controllers
             }
 
             return Ok(response);
-        }
-
-
-        [HttpGet("from/{fromTime}/to/{toTime}/percentiles/{percentile}")]
-        public IActionResult GetMetricsByPercentile(
-            [FromRoute] int fromTime,
-            [FromRoute] int toTime,
-            [FromRoute] Percentile percentile)
-        {
-            _logger.LogInformation($"GetMetricsByPercentile from:{fromTime} to:{toTime} percentiles:{percentile}");
-
-            return Ok();
         }
     }
 }

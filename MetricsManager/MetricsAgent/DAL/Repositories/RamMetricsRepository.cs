@@ -87,7 +87,7 @@ namespace MetricsAgent.DAL.Repositories
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 return (IList<RamMetric>)connection.Query<RamMetric>(
-                    "SELECT Id, Time, Value FROM " + _tablename + " WHERE Time > @timefrom AND Time < @timeto",
+                    "SELECT Id, Time, Value FROM " + _tablename + " WHERE Time >= @timefrom AND Time <= @timeto",
                 new { timefrom = timefrom, timeto = timeto });
             }
         }
