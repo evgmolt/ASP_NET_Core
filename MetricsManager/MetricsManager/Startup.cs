@@ -19,6 +19,8 @@ using MetricsManager.Client;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
+using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 
 namespace MetricsManager
 {
@@ -39,18 +41,18 @@ namespace MetricsManager
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "API сервиса агента сбора метрик",
-                    Description = "Описание сервиса",
+                    Title = "API пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",
+                    Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                     TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
-                        Name = "Студент Евгений Молчков, преподаватель Игорь Владимиров",
+                        Name = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                         Email = string.Empty,
                         Url = new Uri("https://geekbrains.ru"),
                     },
                     License = new OpenApiLicense
                     {
-                        Name = "можно указать под какой лицензией все опубликовано",
+                        Name = "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                         Url = new Uri("https://example.com/license"),
                     }
                 });
@@ -61,7 +63,8 @@ namespace MetricsManager
 
             services.AddControllers();
 
-            services.AddSingleton<IAgentsRepository, IAgentsRepository>();
+            services.AddSingleton<ISqlSettingsProvider, SqlSettingsProvider>();
+            services.AddSingleton<IAgentsRepository<AgentInfo>, AgentsRepository>();
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
             services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
@@ -121,14 +124,14 @@ namespace MetricsManager
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
-            // Включение middleware в пайплайн для обработки Swagger запросов.
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Swagger пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
             app.UseSwagger();
-            // включение middleware для генерации swagger-ui
-            // указываем Swagger JSON эндпоинт (куда обращаться за сгенерированной спецификацией
-            // по которой будет построен UI).
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ swagger-ui
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Swagger JSON пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI).
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API сервиса агента сбора метрик");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
 //                c.RoutePrefix = string.Empty;
             });
 

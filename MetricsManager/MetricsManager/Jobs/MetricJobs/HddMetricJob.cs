@@ -17,13 +17,13 @@ namespace MetricsManager.Jobs.MetricJobs
     public class HddMetricJob : IJob
     {
         private readonly IHddMetricsRepository _repository;
-        private readonly IAgentsRepository _agentsRepository;
+        private readonly IAgentsRepository<AgentInfo> _agentsRepository;
         private readonly IMetricsAgentClient _client;
         private readonly ILogger<HddMetricJob> _logger;
 
         public HddMetricJob(
             IHddMetricsRepository repository, 
-            IAgentsRepository agentsRepository, 
+            IAgentsRepository<AgentInfo> agentsRepository, 
             IMetricsAgentClient client,
             ILogger<HddMetricJob> logger)
         {
@@ -42,8 +42,8 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        HddMetric lastmetric = _repository.GetLast(i);
-                        long fromtimesec = lastmetric?.Time ?? 0;
+                        HddMetric lastMetric = _repository.GetLast(i);
+                        long fromtimesec = lastMetric?.Time ?? 0;
                         DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
                         var metrics = _client.GetHddMetrics(new GetAllHddMetricsApiRequest()
                         {

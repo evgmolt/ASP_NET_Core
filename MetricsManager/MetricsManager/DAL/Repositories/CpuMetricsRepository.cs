@@ -3,6 +3,7 @@ using Dapper;
 using MetricsManager.DAL;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,15 +17,15 @@ namespace DAL
     public class CpuMetricsRepository : ICpuMetricsRepository
     {
         private string _tablename;
-        private IConfiguration _configuration;
+        private ISqlSettingsProvider _sqlSettingsProvider;
         private string _connectionString;
         private readonly ILogger<CpuMetricsRepository> _logger;
 
-        public CpuMetricsRepository(IConfiguration configuration, ILogger<CpuMetricsRepository> logger)
+        public CpuMetricsRepository(ISqlSettingsProvider sqlSettingsProvider, ILogger<CpuMetricsRepository> logger)
         {
             _logger = logger;
-            _configuration = configuration;
-            _connectionString = _configuration.GetValue<string>("ConnectionString");
+            _sqlSettingsProvider = sqlSettingsProvider;
+            _connectionString = _sqlSettingsProvider.GetConnectionString();
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.Cpu];
         }
@@ -123,7 +124,7 @@ namespace DAL
                 try
                 {
                     return connection.QuerySingle<CpuMetric>(
-                        "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
+                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
                         new { agentid = agentid });
                 }
                 catch (Exception ex)

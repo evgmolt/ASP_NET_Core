@@ -4,7 +4,9 @@ using Dapper;
 using MetricsManager.DAL;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
+using MetricsManager.SqlSettings;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -16,13 +18,15 @@ namespace MetricsManager.DAL.Repositories
     public class RamMetricsRepository : IRamMetricsRepository
     {
         private string _tablename;
-        private IConfiguration _configuration;
+        private ISqlSettingsProvider _sqlSettingsProvider;
         private string _connectionString;
+        private readonly ILogger<RamMetricsRepository> _logger;
 
-        public RamMetricsRepository(IConfiguration configuration)
+        public RamMetricsRepository(ISqlSettingsProvider sqlSettingsProvider, ILogger<RamMetricsRepository> logger)
         {
-            _configuration = configuration;
-            _connectionString = _configuration.GetValue<string>("ConnectionString");
+            _logger = logger;
+            _sqlSettingsProvider = sqlSettingsProvider;
+            _connectionString = _sqlSettingsProvider.GetConnectionString();
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
             _tablename = Strings.TableNames[(int)Enums.MetricsNames.Ram];
         }
@@ -104,8 +108,8 @@ namespace MetricsManager.DAL.Repositories
                 try
                 {
                     return connection.QuerySingle<RamMetric>(
-                                "SELECT Id, AgentId, Time, Value FROM " + _tablename + " WHERE Id = (SELECT MAX(Id) FROM " + _tablename + ")",
-                            new { agentid = agentid });
+                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
+                        new { agentid = agentid });
                 }
                 catch (Exception)
                 {

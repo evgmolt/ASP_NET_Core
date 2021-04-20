@@ -18,13 +18,13 @@ namespace MetricsManager.Jobs.MetricJobs
     public class CpuMetricJob : IJob
     {
         private readonly ICpuMetricsRepository _repository;
-        private readonly IAgentsRepository _agentsRepository;
+        private readonly IAgentsRepository<AgentInfo> _agentsRepository;
         private readonly IMetricsAgentClient _client;
         private readonly ILogger<CpuMetricJob> _logger;
 
         public CpuMetricJob(
             ICpuMetricsRepository repository, 
-            IAgentsRepository agentsRepository, 
+            IAgentsRepository<AgentInfo> agentsRepository, 
             IMetricsAgentClient client, 
             ILogger<CpuMetricJob> logger)
         {
@@ -43,8 +43,8 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        CpuMetric lastmetric = _repository.GetLast(i);
-                        long fromtimesec = lastmetric?.Time ?? 0;
+                        CpuMetric lastMetric = _repository.GetLast(i);
+                        long fromtimesec = lastMetric?.Time ?? 0;
                         DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
                         var metrics = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
                         {
