@@ -16,6 +16,9 @@ using Quartz;
 using Core;
 using Quartz.Impl;
 using MetricsManager.Client;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.IO;
 using MetricsManager.DAL.Models;
 using MetricsManager.SqlSettings;
 
@@ -33,6 +36,31 @@ namespace MetricsManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "API ������� ������ ����� ������",
+                    Description = "�������� �������",
+                    TermsOfService = new Uri("https://example.com/terms"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "������� ������� �������, ������������� ����� ����������",
+                        Email = string.Empty,
+                        Url = new Uri("https://geekbrains.ru"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "����� ������� ��� ����� ��������� ��� ������������",
+                        Url = new Uri("https://example.com/license"),
+                    }
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
             services.AddControllers();
 
             services.AddSingleton<ISqlSettingsProvider, SqlSettingsProvider>();
@@ -96,6 +124,17 @@ namespace MetricsManager
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
+            // ��������� middleware � �������� ��� ��������� Swagger ��������.
+            app.UseSwagger();
+            // ��������� middleware ��� ��������� swagger-ui
+            // ��������� Swagger JSON �������� (���� ���������� �� ��������������� �������������
+            // �� ������� ����� �������� UI).
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API ������� ������ ����� ������");
+//                c.RoutePrefix = string.Empty;
+            });
+
             migrationRunner.MigrateUp();
 
             if (env.IsDevelopment())
