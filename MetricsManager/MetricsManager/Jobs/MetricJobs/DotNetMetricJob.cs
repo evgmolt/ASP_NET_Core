@@ -42,13 +42,12 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        DotNetMetric lastMetric = _repository.GetLast(i);
-                        long fromtimesec = lastMetric?.Time ?? 0;
-                        DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
+                        long lastTime = _repository.GetLastTime(i);
+                        DateTimeOffset fromTime = DateTimeOffset.FromUnixTimeSeconds(lastTime);
                         var metrics = _client.GetDotNetMetrics(new GetAllDotNetMetricsApiRequest()
                         {
                             AgentAddress = agents[i].AgentAddress,
-                            FromTime = fromtime,
+                            FromTime = fromTime,
                             ToTime = DateTimeOffset.Now
                         });
                         if (metrics != null)

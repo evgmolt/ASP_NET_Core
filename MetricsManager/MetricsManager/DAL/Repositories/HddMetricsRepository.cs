@@ -101,19 +101,19 @@ namespace MetricsManager.DAL.Repositories
             }
         }
 
-        public HddMetric GetLast(int agentid)
+        public long GetLastTime(int agentid)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 try
                 {
-                    return connection.QuerySingle<HddMetric>(
-                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
+                    return connection.QuerySingle<long>(
+                        "SELECT MAX(Time) FROM " + _tablename + " WHERE AgentId = @agentid",
                         new { agentid = agentid });
                 }
                 catch (Exception)
                 {
-                    return null;
+                    return 0;
                 }
             }
         }

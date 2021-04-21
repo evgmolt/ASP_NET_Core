@@ -33,7 +33,6 @@ namespace MetricsManager.DAL.Migrations
             {
                 Delete.Table(Strings.TableNames[i]);
             }
-            Delete.Table("cpumetrics");
         }
     }
 }
