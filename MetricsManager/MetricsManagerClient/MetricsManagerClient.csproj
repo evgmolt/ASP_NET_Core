@@ -41,6 +41,9 @@
     <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
       <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -69,6 +72,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Client\ApiRequests\ApiRequest.cs" />
+    <Compile Include="Client\ApiRequests\GetAllCpuMetricsApiRequest.cs" />
+    <Compile Include="Client\ApiRequests\GetAllDotNetMetricsApiRequest.cs" />
+    <Compile Include="Client\ApiRequests\GetAllHddMetricsApiRequest.cs" />
+    <Compile Include="Client\ApiRequests\GetAllNetworkMetrisApiRequest.cs" />
+    <Compile Include="Client\ApiRequests\GetAllRamMetricsApiRequest.cs" />
+    <Compile Include="Client\ApiResponses\AllCpuMetricsApiResponse.cs" />
+    <Compile Include="Client\ApiResponses\AllDotNetMetricsApiResponse.cs" />
+    <Compile Include="Client\ApiResponses\AllHddMetricsApiResponse.cs" />
+    <Compile Include="Client\ApiResponses\AllNetworkMetricsApiResponse.cs" />
+    <Compile Include="Client\ApiResponses\AllRamMetricsApiResponse.cs" />
+    <Compile Include="Client\ApiResponses\ApiMetric.cs" />
+    <Compile Include="Client\ApiResponses\ApiResponce.cs" />
+    <Compile Include="Client\IMetricsAgentClient.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -82,6 +99,7 @@
     <Compile Include="MaterialCards.xaml.cs">
       <DependentUpon>MaterialCards.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Client\MetricsAgentClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
