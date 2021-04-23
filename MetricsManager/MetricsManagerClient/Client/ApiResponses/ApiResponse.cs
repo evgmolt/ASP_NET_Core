@@ -7,6 +7,6 @@ namespace MetricsManagerClient.Client.ApiResponses
 {
     public class ApiResponse
     {
-        public List<ApiMetric> Metrics;
+        public List<int> Metrics;
     }
 }

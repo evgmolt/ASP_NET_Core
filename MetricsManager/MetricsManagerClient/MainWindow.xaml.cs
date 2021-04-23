@@ -1,4 +1,5 @@
-﻿using MetricsManagerClient.Client;
+﻿using LiveCharts;
+using MetricsManagerClient.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,18 +43,43 @@ namespace MetricsManagerClient
                 FromTime = DateTimeOffset.Now - new TimeSpan(0, 0, 10),
                 ToTime = DateTimeOffset.Now
             });
-            int maxValuesCount = 10;
-            Random rand = new Random();
-            if (CpuChart.ColumnServiesValues[0].Values.Count > maxValuesCount)
+            if (response == null)
             {
-                CpuChart.ColumnServiesValues[0].Values.RemoveAt(0);
+                return;
             }
-            CpuChart.ColumnServiesValues[0].Values.Add(rand.Next(5, 100));
+            if (response.Count > 0)
+            {
+                CpuProgressBar.Value = response[0];
+            }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        List<int> GetCpuMetricsFormInterval(DateTimeOffset fromTime, DateTimeOffset toTime)
         {
-            CpuChart.ColumnServiesValues[0].Values.Add(48d);
+            return httpClient.GetCpuMetrics(new GetAllCpuMetricsApiRequest
+            {
+                AgentAddress = "http://localhost:5000",
+                FromTime = fromTime,
+                ToTime = toTime
+            });
+        }
+
+       
+        private void button_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DateTimeOffset fromTime = new DateTimeOffset((DateTime)DatePickerFrom.SelectedDate);
+                DateTimeOffset toTime = new DateTimeOffset((DateTime)DatePickerTo.DisplayDate);
+                var metrics = GetCpuMetricsFormInterval(fromTime, toTime);
+                CpuChart.ColumnServiesValues[0].Values.Clear();
+                for (int i = 0; i < metrics.Count(); i++)
+                {
+                    CpuChart.ColumnServiesValues[0].Values.Add(metrics[i]);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

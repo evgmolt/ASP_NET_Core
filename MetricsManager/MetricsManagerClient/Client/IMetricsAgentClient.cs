@@ -7,14 +7,14 @@ namespace MetricsManagerClient.Client
 {
     public interface IMetricsAgentClient
     {
-        AllCpuMetricsApiResponse GetCpuMetrics(GetAllCpuMetricsApiRequest request);
+        List<int> GetCpuMetrics(GetAllCpuMetricsApiRequest request);
 
-        AllDotNetMetricsApiResponse GetDotNetMetrics(GetAllDotNetMetricsApiRequest request);
- 
-        AllHddMetricsApiResponse GetHddMetrics(GetAllHddMetricsApiRequest request);
+        List<int> GetDotNetMetrics(GetAllDotNetMetricsApiRequest request);
 
-        AllNetworkMetricsApiResponse GetNetworkMetrics(GetAllNetworkMetrisApiRequest request);
+        List<int> GetHddMetrics(GetAllHddMetricsApiRequest request);
 
-        AllRamMetricsApiResponse GetRamMetrics(GetAllRamMetricsApiRequest request);
+        List<int> GetNetworkMetrics(GetAllNetworkMetrisApiRequest request);
+
+        List<int> GetRamMetrics(GetAllRamMetricsApiRequest request);
     }
 }

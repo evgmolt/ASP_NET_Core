@@ -5,11 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MetricsManagerClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
-    <Grid>
-        <StackPanel>
-            <local:MaterialCards Grid.Column="0" Grid.Row="0" x:Name="CpuChart"></local:MaterialCards>
-            <Button Width="400" Height="50" Click="Button_Click">Привет</Button>
-        </StackPanel>
+        Title="MainWindow" Height="600" Width="992.906">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="40 px"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <local:MaterialCards Grid.Column="1" Grid.Row="0" x:Name="CpuChart" Margin="0,0,0,20"></local:MaterialCards>
+        <ProgressBar x:Name="CpuProgressBar" Grid.Column="0" Grid.Row="0" Orientation="Vertical" Minimum="0" Maximum="100" Value="50" Margin="20"></ProgressBar>
+        <TextBlock x:Name="textBlock1" Grid.Column="0" HorizontalAlignment="Center" Margin="20,10.4,29,0" Grid.Row="1" TextWrapping="Wrap" Text="Cpu" VerticalAlignment="Top" Width="51" FontSize="20" FontWeight="Bold" RenderTransformOrigin="-0.163,0.239"/>
+        <Button x:Name="button" Content="Get metrics" Height="40" Grid.Column="1" HorizontalAlignment="Left" Margin="20,20,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="button_Click_1"/>
+        <DatePicker x:Name="DatePickerFrom" Grid.Column="1" HorizontalAlignment="Left" Margin="151,36.6,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <DatePicker x:Name="DatePickerTo" Grid.Column="1" HorizontalAlignment="Left" Margin="312,36.6,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Left" Margin="151,19.6,0,0" Grid.Row="2" TextWrapping="Wrap" Text="From date" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock2" Grid.Column="1" HorizontalAlignment="Left" Margin="312,20.6,0,0" Grid.Row="2" TextWrapping="Wrap" Text="To date" VerticalAlignment="Top" RenderTransformOrigin="0.556,-0.35"/>
     </Grid>
 </Window>

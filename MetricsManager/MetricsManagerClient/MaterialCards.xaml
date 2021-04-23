@@ -71,11 +71,6 @@ Click="UpdateOnСlick" Grid.RowSpan="2">
                             </Grid.Effect>
                             <Ellipse Stroke="Black" StrokeThickness="0" Fill="#CD2156">
                             </Ellipse>
-                            <Path Width="20" Height="20" Stretch="Fill" Fill="White"    
-Data="F1 M 58,33.5001L 58,27L 49,19L 40,27.5001L 40,33.5001L 46,28.2097L 46,40.5C
-46,46.299 41.299,51 35.5,51C 29.701,51 25,46.299 25,40.5C 25,34.8686 29.4332,30.2727
-35,30.0117L 35,24.0074C 26.1186,24.2718 19,31.5546 19,40.5C 19,49.6127 26.3873,57
-35.5,57C 44.6127,57 52,49.6127 52,40.5L 52,28.125L 58,33.5001 Z "/>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </ControlTemplate>
@@ -87,14 +82,8 @@ Hoverable="True" DataTooltip="{x:Null}"
 Series="{Binding ColumnServiesValues}">
             </lvc:CartesianChart>
             <StackPanel Grid.Row="3" VerticalAlignment="Center" Margin="25, 0">
-                <TextBlock Opacity=".4" FontSize="13">За последние 12 часов средняя
-загрузка <LineBreak /> Проценты</TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Name="PercentTextBlock" Foreground="#303030"
-FontSize="40" Text="10" />
-                    <TextBlock Foreground="#303030" FontSize="18"
-VerticalAlignment="Bottom" Margin="8, 6">%</TextBlock>
-                </StackPanel>
+                    </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

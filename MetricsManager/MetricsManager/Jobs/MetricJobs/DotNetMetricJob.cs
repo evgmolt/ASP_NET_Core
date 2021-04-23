@@ -52,6 +52,7 @@ namespace MetricsManager.Jobs.MetricJobs
                         });
                         if (metrics != null)
                         {
+                            _logger.LogInformation(@"!!! DotNet metrics: {0}", metrics.Metrics.Count());
                             foreach (var metric in metrics.Metrics)
                             {
                                 _repository.Create(new DotNetMetric()

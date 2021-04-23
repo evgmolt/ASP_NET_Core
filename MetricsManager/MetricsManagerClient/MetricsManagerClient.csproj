@@ -78,13 +78,8 @@
     <Compile Include="Client\ApiRequests\GetAllHddMetricsApiRequest.cs" />
     <Compile Include="Client\ApiRequests\GetAllNetworkMetrisApiRequest.cs" />
     <Compile Include="Client\ApiRequests\GetAllRamMetricsApiRequest.cs" />
-    <Compile Include="Client\ApiResponses\AllCpuMetricsApiResponse.cs" />
-    <Compile Include="Client\ApiResponses\AllDotNetMetricsApiResponse.cs" />
-    <Compile Include="Client\ApiResponses\AllHddMetricsApiResponse.cs" />
-    <Compile Include="Client\ApiResponses\AllNetworkMetricsApiResponse.cs" />
-    <Compile Include="Client\ApiResponses\AllRamMetricsApiResponse.cs" />
     <Compile Include="Client\ApiResponses\ApiMetric.cs" />
-    <Compile Include="Client\ApiResponses\ApiResponce.cs" />
+    <Compile Include="Client\ApiResponses\ApiResponse.cs" />
     <Compile Include="Client\IMetricsAgentClient.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

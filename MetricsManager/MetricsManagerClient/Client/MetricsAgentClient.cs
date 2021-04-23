@@ -1,6 +1,8 @@
 ﻿using MetricsManagerClient.Client.ApiRequests;
+using MetricsManagerClient.Client.ApiResponses;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 
@@ -14,6 +16,27 @@ namespace MetricsManagerClient.Client
         public MetricsAgentClient(HttpClient Client)
         {
             _Client = Client;
+        }
+
+        private static List<int> GetValues(string inputString)
+        {
+            var outList = new List<int>();
+            string value = "value";
+            int pos = inputString.IndexOf(value);
+            while (!(pos < 0))
+            {
+                string substr = inputString.Substring(pos + 7);
+                inputString = substr;
+                pos = substr.IndexOf(',');
+                substr = substr.Substring(0, pos);
+                int result;
+                if (Int32.TryParse(substr, out result))
+                {
+                    outList.Add(result);
+                }
+                pos = inputString.IndexOf(value);
+            }
+            return outList;
         }
 
         private string GetMetricsApiResponseString(ApiRequest request, string tableName)
@@ -47,12 +70,12 @@ namespace MetricsManagerClient.Client
             
         }
 
-        public AllCpuMetricsApiResponse GetCpuMetrics(GetAllCpuMetricsApiRequest request)
+        public List<int> GetCpuMetrics(GetAllCpuMetricsApiRequest request)
         {            
             string content = GetMetricsApiResponseString(request, "cpumetrics");
             if (content != null)
             {
-                return JsonConvert.DeserializeObject<AllCpuMetricsApiResponse>(content);
+                return GetValues(content);
             }
             else 
             {
@@ -60,12 +83,12 @@ namespace MetricsManagerClient.Client
             }
         }
 
-        public AllDotNetMetricsApiResponse GetDotNetMetrics(GetAllDotNetMetricsApiRequest request)
+        public List<int> GetDotNetMetrics(GetAllDotNetMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, "dotnetmetrics");
             if (content != null)
             {
-                return JsonConvert.DeserializeObject<AllDotNetMetricsApiResponse>(content);
+                return GetValues(content);
             }
             else
             {
@@ -73,12 +96,12 @@ namespace MetricsManagerClient.Client
             }
         }
 
-        public AllHddMetricsApiResponse GetHddMetrics(GetAllHddMetricsApiRequest request)
+        public List<int> GetHddMetrics(GetAllHddMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, "hddmetrics");
             if (content != null)
             {
-                return JsonConvert.DeserializeObject<AllHddMetricsApiResponse>(content);
+                return GetValues(content);
             }
             else
             {
@@ -86,12 +109,12 @@ namespace MetricsManagerClient.Client
             }
         }
 
-        public AllNetworkMetricsApiResponse GetNetworkMetrics(GetAllNetworkMetrisApiRequest request)
+        public List<int> GetNetworkMetrics(GetAllNetworkMetrisApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, "networkmetrics");
             if (content != null)
             {
-                return JsonConvert.DeserializeObject<AllNetworkMetricsApiResponse>(content);
+                return GetValues(content);
             }
             else
             {
@@ -99,12 +122,12 @@ namespace MetricsManagerClient.Client
             }
         }
 
-        public AllRamMetricsApiResponse GetRamMetrics(GetAllRamMetricsApiRequest request)
+        public List<int> GetRamMetrics(GetAllRamMetricsApiRequest request)
         {
             string content = GetMetricsApiResponseString(request, "rammetrics");
             if (content != null)
             {
-                return JsonConvert.DeserializeObject<AllRamMetricsApiResponse>(content);
+                return GetValues(content);
             }
             else
             {
