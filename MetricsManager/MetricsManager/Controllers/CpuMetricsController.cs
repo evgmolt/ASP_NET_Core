@@ -2,6 +2,7 @@
 using Enums;
 using MetricsManager.Client;
 using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using MetricsManager.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -106,6 +107,20 @@ namespace MetricsManager.Controllers
                 values[i] = response.Metrics[i].Value;
             }
             return Ok(PercentileCounter.GetPercentile(values, percentile));
+        }
+
+        [HttpGet("agent/{agentId}")]
+        public IActionResult GetLastTime([FromRoute] int agentId)
+        {
+            long metric = _repository.GetLastTime(agentId);
+            return Ok(metric);
+        }
+
+        [HttpGet("id/{id}")]
+        public IActionResult GetMetricById([FromRoute] int id)
+        {
+            CpuMetric metric = _repository.GetById(id);
+            return Ok(metric);
         }
     }
 }

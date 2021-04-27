@@ -21,6 +21,9 @@ using System.Reflection;
 using System.IO;
 using MetricsManager.DAL.Models;
 using MetricsManager.SqlSettings;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.IO;
 
 namespace MetricsManager
 {
@@ -41,6 +44,7 @@ namespace MetricsManager
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
+
                     Title = "API ������� ������ ����� ������",
                     Description = "�������� �������",
                     TermsOfService = new Uri("https://example.com/terms"),
@@ -142,7 +146,7 @@ namespace MetricsManager
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+//            app.UseHttpsRedirection();
 
             app.UseRouting();
 

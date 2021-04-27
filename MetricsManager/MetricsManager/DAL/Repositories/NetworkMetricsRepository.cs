@@ -101,19 +101,19 @@ namespace MetricsManager.DAL.Repositories
             }
         }
 
-        public NetworkMetric GetLast(int agentid)
+        public long GetLastTime(int agentid)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 try
                 {
-                    return connection.QuerySingle<NetworkMetric>(
+                    return connection.QuerySingle<long>(
                         "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
                         new { agentid = agentid });
                 }
                 catch (Exception)
                 {
-                    return null;
+                    return 0;
                 }
             }
         }

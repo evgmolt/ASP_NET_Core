@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetricsAgentTests", "Metric
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enums", "Enums\Enums.csproj", "{AB99863A-2BD0-4434-BA40-A596C7571EEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{2B8A32AC-90A3-49C2-9E3D-DBEFE0F56B7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{2B8A32AC-90A3-49C2-9E3D-DBEFE0F56B7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricsManagerClient", "MetricsManagerClient\MetricsManagerClient.csproj", "{6AA4663D-D38B-49FB-A816-608502EFFA73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{2B8A32AC-90A3-49C2-9E3D-DBEFE0F56B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B8A32AC-90A3-49C2-9E3D-DBEFE0F56B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B8A32AC-90A3-49C2-9E3D-DBEFE0F56B7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA4663D-D38B-49FB-A816-608502EFFA73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA4663D-D38B-49FB-A816-608502EFFA73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA4663D-D38B-49FB-A816-608502EFFA73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA4663D-D38B-49FB-A816-608502EFFA73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

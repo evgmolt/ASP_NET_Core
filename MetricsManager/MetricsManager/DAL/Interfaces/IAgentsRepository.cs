@@ -13,6 +13,8 @@ namespace MetricsManager.DAL.Interfaces
 
         void DisableAgentById(int agentId);
 
+        void DeleteAgentById(int agentId);
+
         IList<AgentInfo> GetAgentsList();
 
         AgentInfo GetAgentById(int id);

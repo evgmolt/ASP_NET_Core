@@ -112,25 +112,21 @@ namespace DAL
             }
         }
 
-        public IList<CpuMetric> GetByTimePeriod(DateTimeOffset timeFrom, DateTimeOffset timeTo)
-        {
-            return null;
-        }
-
-        public CpuMetric GetLast(int agentid)
+        public long GetLastTime(int agentid)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 try
                 {
-                    return connection.QuerySingle<CpuMetric>(
-                        "SELECT Id, AgentId, MAX(Time), Value FROM " + _tablename + " WHERE AgentId = @agentid",
+                    _logger.LogInformation(agentid.ToString());
+                    return connection.QuerySingle<long>(
+                        "SELECT MAX(Time) FROM " + _tablename + " WHERE AgentId = @agentid",
                         new { agentid = agentid });
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return null;
+                    return 0;
                 }
             }
         }

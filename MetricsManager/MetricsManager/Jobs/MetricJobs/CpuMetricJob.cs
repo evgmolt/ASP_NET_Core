@@ -1,4 +1,5 @@
-﻿using MetricsManager.Client;
+﻿using AutoMapper;
+using MetricsManager.Client;
 using MetricsManager.Controllers;
 using MetricsManager.DAL.Interfaces;
 using MetricsManager.DAL.Models;
@@ -43,22 +44,23 @@ namespace MetricsManager.Jobs.MetricJobs
                 {
                     if (agents[i].Enabled)
                     {
-                        CpuMetric lastMetric = _repository.GetLast(i);
-                        long fromtimesec = lastMetric?.Time ?? 0;
-                        DateTimeOffset fromtime = DateTimeOffset.FromUnixTimeSeconds(fromtimesec);
+                        int agentId = i + 1;
+                        var lastTime = _repository.GetLastTime(agentId);
+                        DateTimeOffset fromTime = DateTimeOffset.FromUnixTimeSeconds(lastTime);
                         var metrics = _client.GetCpuMetrics(new GetAllCpuMetricsApiRequest()
                         {
                             AgentAddress = agents[i].AgentAddress,
-                            FromTime = fromtime,
+                            FromTime = fromTime,
                             ToTime = DateTimeOffset.Now
                         });
                         if (metrics != null)
                         {
+                            _logger.LogInformation(@"metrics: {0}", metrics.Metrics.Count());
                             foreach (var metric in metrics.Metrics)
                             {
                                 _repository.Create(new CpuMetric()
                                 {
-                                    AgentId = metric.AgentId,
+                                    AgentId = agentId,
                                     Time = metric.Time.ToUnixTimeSeconds(),
                                     Value = metric.Value
                                 });
